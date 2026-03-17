@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Parsing a DFM - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Parsing a DFM";
+        var mkdocs_page_input_path = "dfm-parsing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Parsing a DFM</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lets-parse">Let's Parse!</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#test-against-a-dfm-file">Test Against a DFM File</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#token-testing">Token Testing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#token-decomposition">Token Decomposition</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#trees">Trees</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#important">Important</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Parsing a DFM</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dfm-parsing-with-antlr4">DFM Parsing with ANTLR4</h1>
+<p>In this section we will leverage our refined DFM grammar to parse an example DFM file. We will describe the techniques needed to parse a DFM file with <em>ANTLR4</em>, and examine the outputs.</p>
+<h3 id="setup">Setup</h3>
+<p>For parsing a DFM file with our grammar, we will first need to set up <em>ANTLR</em>.</p>
+<h5 id="prerequisites">Prerequisites</h5>
+<ul>
+<li>Java (JDK 8 or later)</li>
+<li>ANTLR4 complete jar — download from <a href="https://www.antlr.org/download.html">antlr.org</a></li>
+</ul>
+<p><em>ANTLR</em> can be manually downloaded from the source above, or using the command line tool <code>curl</code> to grab it:</p>
+<pre><code>$ cd /usr/local/lib
+$ curl -O http://www.antlr.org/download/antlr-4.x-complete.jar
+</code></pre>
+<p>Add the <strong>ANTLR jar</strong> to the classpath and set up the <code>grun</code> alias:</p>
+<pre><code class="language-bash">export CLASSPATH=&quot;.:/usr/local/lib/antlr-4.x-complete.jar:$CLASSPATH&quot;
+alias antlr4='java -jar /usr/local/lib/antlr-4.x-complete.jar'
+alias grun='java org.antlr.v4.gui.TestRig'
+alias javac='javac -cp &quot;.:/usr/local/lib/antlr-4.x-complete.jar&quot;'
+</code></pre>
+<p>Replace <code>4.x</code> with the downloaded version.</p>
+<p><strong>Notice</strong>: we will be assuming that the reader is using the same aliases as the ones specified above.</p>
+<h3 id="lets-parse">Let's Parse!</h3>
+<p>Now that the setup is complete, the time has come to parse some DFM code.</p>
+<p>First things first, let's copy our DFM grammar into a fresh directory, included in a file with the <code>.g4</code> extension.</p>
+<p><strong>Notice</strong>: remember that the file name has to correspond to the grammar specification in the <code>.g4</code> file.</p>
+<p><code>../dir/DelphiDFM.g4</code> &lt;=&gt; <code>grammar DelphiDFM ;</code></p>
+<p>Next, we generate the lexer and parser using <em>ANTLR</em>:</p>
+<p><code>antlr4 DelphiDFM.g4</code></p>
+<p>Output:</p>
+<pre><code>ls
+
+DelphiDFMBaseListener.java  
+DelphiDFMLexer.interp  
+DelphiDFMListener.java
+DelphiDFM.g4                
+DelphiDFMLexer.java    
+DelphiDFMParser.java
+DelphiDFM.interp            
+DelphiDFMLexer.tokens  
+DelphiDFM.tokens
+</code></pre>
+<p>Great! The next step is to compile all <code>.java</code> files generated, like so:</p>
+<p><code>javac *.java</code></p>
+<p>Now we get the compiled files:</p>
+<pre><code>ls
+
+DelphiDFMBaseListener.class  
+DelphiDFMBaseListener.java   
+DelphiDFM.g4                 
+DelphiDFM.interp             
+DelphiDFMLexer.class         
+DelphiDFMLexer.interp        
+DelphiDFMLexer.java          
+DelphiDFMLexer.tokens        
+DelphiDFMListener.class      
+DelphiDFMListener.java
+'DelphiDFMParser$BlockContext.class'
+'DelphiDFMParser$FileContext.class'
+'DelphiDFMParser$ItemContext.class'
+'DelphiDFMParser$MethodLSContext.class'
+'DelphiDFMParser$PropertyBlockContext.class'
+'DelphiDFMParser$ValueContext.class'
+ DelphiDFMParser.class
+ DelphiDFMParser.java
+ DelphiDFM.tokens
+</code></pre>
+<p>Aha! Now we can see our parser rules as well.</p>
+<p><img src="https://media1.tenor.com/m/sqYV7D2euF8AAAAd/kronk-oh-yeah-its-all-coming-together.gif" alt="funny gif" width="300"/></p>
+<h3 id="test-against-a-dfm-file">Test Against a DFM File</h3>
+<p>The only thing we are missing is a test file that we should parse. The DFM file below was conceived to test all rules we previously defined in our grammar:</p>
+<p><code>../dir/test.dfm</code></p>
+<pre><code>inherited frmActions: TfrmActions
+    Tag = 3
+    Caption = 'hello'
+    inherited pnlTitle: TfrmTitleBar
+        Color = clWhite
+        ParentBackground = False
+    end
+    inherited pnlError: TfrmError
+        inherited lblMessage: TcxLabel
+            AnchorY = -18
+            FloatAnchorY = 18.7283
+        end
+    end
+    object gvListUser: TcxGridDBColumn
+        Caption = 'Test'
+        DataBinding.FieldName = 'TestUser'
+        Properties.ListColumns = &lt;
+            item
+                FieldName = 'fullName'
+                Fixed = True
+                Width = 100
+            end&gt;
+        Properties.Alignment.Vert = taVCencter
+        Height = 20
+        Properties.DateButtons = [btnToday]
+    end
+    object testItemHchy: TestItemHchy
+        Properties.ListColumns = &lt;
+        item
+            Fixed = True
+            Width = 80
+        end
+        item
+            Width = 200
+            FieldName = 'testing'
+        end&gt;
+        Width = 282
+    end
+    inherited testFields: TestFields
+        Indexes = &lt;&gt;
+        SortOptions = []
+        OtherSortOptions = [test1, test2, test3]
+    end
+    inherited testMultipleInheritance: TestMultipleInheritance
+        inherited inhOne: InhOne
+            inherited inhTwo: InhTwo
+                inherited inhThree: InhThree
+                    object deepObj: DeepObj
+                        Height = 10
+                        Width = 20
+                        Top = 30
+                    end
+                end
+            end
+        end
+    end
+end
+</code></pre>
+<h3 id="token-testing">Token Testing</h3>
+<p>Now we have all necessary components. First, let's take a look at all identified tokens from our <code>test.dfm</code> file. We use <code>grun</code>, which is the alias for <em>ANTLR's</em> testing rig: <code>org.antlr.v4.gui.TestRig</code>.</p>
+<p>We use the command:</p>
+<p><code>grun DelphiDFM file -tokens test.dfm</code></p>
+<p>And our output:</p>
+<pre><code>[@0,0:8='inherited',&lt;'inherited'&gt;,1:0]
+[@1,10:19='frmActions',&lt;ID&gt;,1:10]
+[@2,20:20=':',&lt;':'&gt;,1:20]
+[@3,22:32='TfrmActions',&lt;ID&gt;,1:22]
+[@4,38:40='Tag',&lt;ID&gt;,2:4]
+[@5,42:42='=',&lt;'='&gt;,2:8]
+[@6,44:44='3',&lt;INT&gt;,2:10]
+[@7,50:56='Caption',&lt;ID&gt;,3:4]
+[@8,58:58='=',&lt;'='&gt;,3:12]
+[@9,60:66=''hello'',&lt;STRING&gt;,3:14]
+[@10,72:80='inherited',&lt;'inherited'&gt;,4:4]
+[@11,82:89='pnlTitle',&lt;ID&gt;,4:14]
+[@12,90:90=':',&lt;':'&gt;,4:22]
+[@13,92:103='TfrmTitleBar',&lt;ID&gt;,4:24]
+[@14,113:117='Color',&lt;ID&gt;,5:8]
+[@15,119:119='=',&lt;'='&gt;,5:14]
+[@16,121:127='clWhite',&lt;ID&gt;,5:16]
+[@17,137:152='ParentBackground',&lt;ID&gt;,6:8]
+[@18,154:154='=',&lt;'='&gt;,6:25]
+[@19,156:160='False',&lt;ID&gt;,6:27]
+[@20,166:168='end',&lt;'end'&gt;,7:4]
+[@21,174:182='inherited',&lt;'inherited'&gt;,8:4]
+[@22,184:191='pnlError',&lt;ID&gt;,8:14]
+[@23,192:192=':',&lt;':'&gt;,8:22]
+[@24,194:202='TfrmError',&lt;ID&gt;,8:24]
+[@25,212:220='inherited',&lt;'inherited'&gt;,9:8]
+[@26,222:231='lblMessage',&lt;ID&gt;,9:18]
+[@27,232:232=':',&lt;':'&gt;,9:28]
+[@28,234:241='TcxLabel',&lt;ID&gt;,9:30]
+[@29,255:261='AnchorY',&lt;ID&gt;,10:12]
+[@30,263:263='=',&lt;'='&gt;,10:20]
+[@31,265:267='-18',&lt;INT&gt;,10:22]
+[@32,281:292='FloatAnchorY',&lt;ID&gt;,11:12]
+
+...
+
+</code></pre>
+<p>Continued further until all tokens are consumed.</p>
+<p><strong>Note</strong> that in our given command, <code>file</code> specifies the rule that needs to contain our input.</p>
+<h3 id="token-decomposition">Token Decomposition</h3>
+<p>Now we can see an output of all identified tokens from our test file. Let's decompose a token so we understand how they are built. For instance, our second token:</p>
+<p><code>[@1,10:19='frmActions',&lt;ID&gt;,1:10]</code></p>
+<p>Each line of the output represents a single token and shows everything we know about the token: </p>
+<ul>
+<li><code>@1</code> indicates that it is the second token (indexed from 0).</li>
+<li><code>10:19=</code> indicates that it goes from character position 10 to 19 (inclusive starting from 0).</li>
+<li><code>'frmActions'</code> indicates what text it has.</li>
+<li><code>&lt;ID&gt;</code> indicates the type of token.</li>
+<li>finally, <code>1:10</code> indicates that it is on line 1 (from 1), and is at character position 10 (starting from zero and counting tabs as a single character).</li>
+</ul>
+<h3 id="trees">Trees</h3>
+<p>So what if we want to see our parse tree? Let's see the command for that:</p>
+<p><code>grun DelphiDFM file -tree test.dfm</code></p>
+<p>And our output...</p>
+<pre><code>(file (block inherited frmActions : TfrmActions (propertyBlock Tag = (value 3)) (propertyBlock Caption = (value 'hello')) (block inherited pnlTitle : TfrmTitleBar (propertyBlock Color = (value clWhite)) (propertyBlock ParentBackground = (value False)) end) (block inherited pnlError : TfrmError (block inherited lblMessage : TcxLabel (propertyBlock AnchorY = (value -18)) (propertyBlock FloatAnchorY = (value 18.7283)) end) end) (block object gvListUser : TcxGridDBColumn (propertyBlock Caption = (value 'Test')) (propertyBlock DataBinding.FieldName = (value 'TestUser')) (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock FieldName = (value 'fullName')) (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 100)) end) &gt;))) (propertyBlock Properties.Alignment.Vert = (value taVCencter)) (propertyBlock Height = (value 20)) (propertyBlock Properties.DateButtons = (value [btnToday])) end) (block object testItemHchy : TestItemHchy (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 80)) end) (item item (propertyBlock Width = (value 200)) (propertyBlock FieldName = (value 'testing')) end) &gt;))) (propertyBlock Width = (value 282)) end) (block inherited testFields : TestFields (propertyBlock Indexes = (value (methodLS &lt; &gt;))) (propertyBlock SortOptions = (value [])) (propertyBlock OtherSortOptions = (value [test1, test2, test3])) end) (block inherited testMultipleInheritance : TestMultipleInheritance (block inherited inhOne : InhOne (block inherited inhTwo : InhTwo (block inherited inhThree : InhThree (block object deepObj : DeepObj (propertyBlock Height = (value 10)) (propertyBlock Width = (value 20)) (propertyBlock Top = (value 30)) end) end) end) end) end) end) &lt;EOF&gt;)
+</code></pre>
+<p>Don't be alarmed! While hardly readable, we do have a structure. Notice the <code>end</code> closures at the end of the output -&gt; we do have a hierarchy.</p>
+<p>Thankfully, to simplify our lives, <em>ANTLR</em> provides a graphical representation of trees. The test is very simple:</p>
+<p><code>grun DelphiDFM file -gui test.dfm</code></p>
+<p>The output:</p>
+<p><img alt="Graphical Parse Tree of the test.dfm File" src="../assets/antlr4_parse_tree.png" /></p>
+<p>This is much easier to read.</p>
+<p>Notice that:</p>
+<ul>
+<li>hierarchy is correctly represented.</li>
+<li>each <code>block</code> correclty begins and ends.</li>
+<li>we correctly represent positive and negative values for both integers and floating-point values.</li>
+<li>we have correctly accounted for multiple property methods.</li>
+<li><code>item</code> list syntax for collection properties correctly begin and end.</li>
+<li>empty <code>item</code> lists and <code>arrays</code> are correctly parsed.</li>
+<li>we even tested deep hierarchy.</li>
+</ul>
+<h3 id="important">Important</h3>
+<p>If <code>DelphiDFM.g4</code> is modified, it's always necessary to regenerate and recompile from scratch to avoid stale <code>.class</code> files:</p>
+<pre><code class="language-bash">rm *.java *.class *.tokens *.interp
+antlr4 DelphiDFM.g4
+javac DelphiDFM*.java
+</code></pre>
+<h3 id="conclusion">Conclusion</h3>
+<p>We learned to write our own DFM grammar, successfully parsed some <code>.dfm</code> test code, checked the token validity and represented everything in a visual parse tree. </p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../gd-refine/" class="btn btn-neutral float-left" title="Refining the Grammar"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>2026 Estrategy All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../gd-refine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

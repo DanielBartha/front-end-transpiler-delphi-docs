@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Matching Floating-Point Numbers - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Matching Floating-Point Numbers";
+        var mkdocs_page_input_path = "gd-floats.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Matching Floating-Point Numbers</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dfm-parsing/">Parsing a DFM</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Grammar Design</li>
+      <li class="breadcrumb-item active">Matching Floating-Point Numbers</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="matching-floating-point-numbers">Matching Floating-Point Numbers</h1>
+<p>Floating-point numbers are more complex to represent and additional rules will need to be implemented because of them. Take the example below:</p>
+<p><code>../../DelphiDFM.g4</code></p>
+<pre><code class="language-yaml">grammar DelphiDFM ;
+
+// Parser Rules
+file : object
+object : objectElements ;
+objectElements : CAPTION '=' STRING | LEFT '=' INT | TOP '=' FLOAT | ... ;
+
+// Lexer Rules
+CAPTION : 'Caption' ;
+LEFT : 'Left' ;
+TOP : 'Top' ;
+
+ID : [a-zA-Z]+ ;
+FLOAT : DIGIT+ '.' DIGIT* | '.' DIGIT+ ;
+INT : DIGIT+ ;
+
+fragment
+DIGIT : [0-9] ;     
+
+STRING : '\'' .*? '\'' ;
+</code></pre>
+<p><strong>Notes</strong></p>
+<ul>
+<li>
+<p>the order of precedence in the lexer rules, specifically <code>FLOAT</code> and <code>INT</code>. If their order would be reversed, an ambiguity conflict would occur. For example, if the lexer sees the sequence <code>123</code> it could match either. Thus, if <code>INT</code> is defined first, the lexer will always prefer <code>INT</code> and never reach <code>FLOAT</code>.</p>
+</li>
+<li>
+<p>the (now) correct specification of <code>CAPTION</code> in <em>objectElements</em>.</p>
+</li>
+<li>
+<p>the addition of the helper rule <code>DIGIT</code>, to not write <code>[0-9]</code> everywhere.</p>
+</li>
+<li>
+<p><code>DIGIT</code> is prefixed with <code>fragment</code> to let ANTLR know that the rule will be used only by other lexical rules. It is not a token in and of itself.</p>
+</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../gd-init/" class="btn btn-neutral float-left" title="Design Initiation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../gd-comments-whitespace/" class="btn btn-neutral float-right" title="Matching Comments and Whitespace">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>2026 Estrategy All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../gd-init/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../gd-comments-whitespace/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

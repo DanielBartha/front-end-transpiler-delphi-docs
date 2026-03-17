@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Design Initiation - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Design Initiation";
+        var mkdocs_page_input_path = "gd-init.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Design Initiation</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dfm-parsing/">Parsing a DFM</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Grammar Design</li>
+      <li class="breadcrumb-item active">Design Initiation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="design-initiation">Design Initiation</h2>
+<p>Considering top-down parsing, we start from the coarsest elements and descend in levels of granularity. Designing starts with natural language. Ergo, the formal definition of Delphi VCL <code>.dfm</code> files.</p>
+<p><strong>Formal Definition</strong> - Delphi DFM (Delphi Form Module) files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.</p>
+<p>The keyword here is <strong>FILE(S)</strong>.
+Ergo, <em>file</em> becomes the <strong>RULE NAME</strong>.</p>
+<pre><code class="language-yaml">file : «sequence of component elements that are terminated by newlines» ;
+</code></pre>
+<p>Then, we step down a level in granularity by describing elements identified on the right side of the start rule. Typically, references to either tokens or yet-to-be-defined rules.</p>
+<p>Tokens, are atomic elements of a parser grammar, such as words, punctuation, operators, etc.
+Rule references, are other language structures which need to be broken down into more detail, such as <em>object</em>.</p>
+<p>Descending further into the next granularity level, for instance, <em>object</em> should represent a sequence of elements which need to be contained within <em>file</em>. For example: <code>Caption</code>, <code>Left</code>, <code>Top</code>, <code>Width</code>, etc.</p>
+<p>Then, a pseudo-code of Parser Rules looks like this:</p>
+<pre><code class="language-yaml">file : «sequence of terminals such as object or inherited, that are terminated by newlines» ;
+object : «sequence of objectElements» ;
+objectElements : «sequence of alternative terminal tokens» ;
+</code></pre>
+<p>Descending further, now we know what the terminal tokens of <em>objectElements</em> should contain. Therefore, we define Lexer and Parser Rules for non-terminal and terminal tokens respectively. For instance:</p>
+<p><code>../../DelphiDFM.g4</code></p>
+<pre><code class="language-yaml">grammar DelphiDFM ;
+
+// Parser Rules
+file : object
+object : objectElements ;
+objectElements : CAPTION | LEFT '=' INT | ... ;
+
+// Lexer Rules
+CAPTION : 'Caption' ;
+LEFT : 'Left' ;
+INT : [0-9]+ ;
+ID : [a-zA-Z]+ ;
+STRING : '\'' .*? '\'' ;    // STRING reads as anything between single quotes
+</code></pre>
+<p>Continuing until no further rules can be defined.</p>
+<p><strong>Notes</strong></p>
+<ul>
+<li>
+<p>grammars always start with a grammar header. In our case, the grammar is called <code>DelphiDFM</code>, and must match the file name: <code>DelphiDFM.g4</code>.</p>
+</li>
+<li>
+<p>the <code>+</code> in <code>INT</code> and <code>ID</code> above, represent an ANTLR specific subrule which describes an arbitrarily long sequence. Essentially means to encode a sequence of one or more elements.</p>
+</li>
+<li>
+<p>the zero-or-more operator <code>*</code> specifies that a list can be empty. Example: <code>INT*</code>. This operator is analogous to a loop in programming languages, ANTLR-generated parsers implement them in this way as well.</p>
+</li>
+<li>
+<p>the alternative operator <code>|</code> specifies alternative options of non-terminals and terminals.</p>
+</li>
+<li>
+<p>the <code>?</code> subrule is a special zero-or-one sequence, and specifies optional constructs. For instance, <code>given a token 'x', if 'x?' then match 'x' or skip it</code>.</p>
+</li>
+<li>
+<p>single quotes in ANTLR are reserved, therefore they need to be escaped like so: <code>'\''</code>.</p>
+</li>
+<li>
+<p>ANTLR resolves potential ambiguity between lexical rules by favoring the rule <em>specified first</em>. Take the following example:</p>
+</li>
+</ul>
+<p><code>../../AmbiguousDelphiDFM.g4</code></p>
+<pre><code class="language-yaml">grammar AmbiguousDelphiDFM ;
+
+file : functionDeclaration | FOR | ... ;
+functionDeclaration : 'for' ;
+
+...
+
+// Lexer Rules
+ID  : [a-zA-Z]+ ;
+FOR : 'for' ;
+
+...
+</code></pre>
+<p>In the example above, since <code>FOR</code> can be evaluated using <code>ID</code> as well, we have an ambiguity conflict. The correct solution is to specify rules in order of precedence:</p>
+<pre><code class="language-yaml">grammar NoLongerAmbiguousDelphiDFM ;
+
+file : functionDeclaration | FOR | ... ;
+functionDeclaration : 'for' ;
+
+...
+
+// Lexer Rules
+FOR : 'for' ;
+ID  : [a-zA-Z]+ ;
+
+...
+</code></pre>
+<p>This way, the literal <em>for</em> will always be tokenized as <code>FOR</code>, and never as <code>ID</code> in the grammar.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../gd-intro/" class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../gd-floats/" class="btn btn-neutral float-right" title="Matching Floating-Point Numbers">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>2026 Estrategy All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../gd-intro/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../gd-floats/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
