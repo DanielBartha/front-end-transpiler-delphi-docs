@@ -2,7 +2,7 @@
 
 Considering top-down parsing, we start from the coarsest elements and descend in levels of granularity. Designing starts with natural language. Ergo, the formal definition of Delphi VCL ```.dfm``` files.
 
-**Formal Definition** - Delphi DFM (Delphi Form Module) files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.
+**Formal Definition** - Delphi Form Module files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.
 
 The keyword here is **FILE(S)**.
 Ergo, *file* becomes the **RULE NAME**.
