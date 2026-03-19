@@ -67,24 +67,26 @@
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#lets-parse">Let's Parse!</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#test-against-a-dfm-file">Test Against a DFM File</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#token-testing">Token Testing</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#token-decomposition">Token Decomposition</a>
+    <li class="toctree-l3"><a class="reference internal" href="#test-against-a-dfm-file">Test Against a DFM File</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#token-testing">Token Testing</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#token-decomposition">Token Decomposition</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#trees">Trees</a>
+    <li class="toctree-l3"><a class="reference internal" href="#trees">Trees</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#tree-visualization">Tree Visualization</a>
+    <li class="toctree-l3"><a class="reference internal" href="#tree-visualization">Tree Visualization</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
+    <li class="toctree-l3"><a class="reference internal" href="#features">Features</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#important">Important</a>
+    <li class="toctree-l3"><a class="reference internal" href="#important">Important</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a>
+    <li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
+    </li>
+        </ul>
     </li>
     </ul>
                 </li>
@@ -159,7 +161,7 @@ java org.antlr.v4.gui.TestRig %*
 </code></pre>
 <p>Replace <code>4.x</code> with the downloaded version.</p>
 <p><strong>Notice</strong>: we will be assuming that the reader is using the same aliases as the ones specified above.</p>
-<h3 id="lets-parse">Let's Parse!</h3>
+<h2 id="lets-parse">Let's Parse!</h2>
 <p>Now that the setup is complete, the time has come to parse some DFM code.</p>
 <p>First things first, let's copy our DFM grammar into a fresh directory, included in a file with the <code>.g4</code> extension.</p>
 <p><strong>Notice</strong>: remember that the file name has to correspond to the grammar specification in the <code>.g4</code> file.</p>
@@ -167,7 +169,7 @@ java org.antlr.v4.gui.TestRig %*
 <p>Next, we generate the lexer and parser using <em>ANTLR</em>:</p>
 <p><code>antlr4 DelphiDFM.g4</code></p>
 <p>Output:</p>
-<pre><code class="language-shell">ls
+<pre><code class="language-bash">ls
 
 DelphiDFMBaseListener.java  
 DelphiDFMLexer.interp  
@@ -182,7 +184,7 @@ DelphiDFM.tokens
 <p>Great! The next step is to compile all <code>.java</code> files generated, like so:</p>
 <p><code>javac *.java</code></p>
 <p>Now we get the compiled files:</p>
-<pre><code class="language-shell">ls
+<pre><code class="language-bash">ls
 
 DelphiDFMBaseListener.class  
 DelphiDFMBaseListener.java   
@@ -209,7 +211,7 @@ DelphiDFMListener.java
 <h3 id="test-against-a-dfm-file">Test Against a DFM File</h3>
 <p>The only thing we are missing is a test file that we should parse. The DFM file below was conceived to test all rules we previously defined in our grammar:</p>
 <p><code>../dir/test.dfm</code></p>
-<pre><code>inherited frmActions: TfrmActions
+<pre><code class="language-ini">inherited frmActions: TfrmActions
     Tag = 3
     Caption = 'hello'
     inherited pnlTitle: TfrmTitleBar
@@ -272,7 +274,7 @@ end
 <p>We use the command:</p>
 <p><code>grun DelphiDFM file -tokens test.dfm</code></p>
 <p>And our output:</p>
-<pre><code class="language-shell">[@0,0:8='inherited',&lt;'inherited'&gt;,1:0]
+<pre><code class="language-bash">[@0,0:8='inherited',&lt;'inherited'&gt;,1:0]
 [@1,10:19='frmActions',&lt;ID&gt;,1:10]
 [@2,20:20=':',&lt;':'&gt;,1:20]
 [@3,22:32='TfrmActions',&lt;ID&gt;,1:22]
@@ -325,8 +327,8 @@ end
 <h3 id="trees">Trees</h3>
 <p>So what if we want to see our parse tree? Let's see the command for that:</p>
 <p><code>grun DelphiDFM file -tree test.dfm</code></p>
-<p>And our output...</p>
-<pre><code class="language-shell">(file 
+<p>And our output:</p>
+<pre><code class="language-ini">(file 
     (block inherited frmActions : TfrmActions 
         (propertyBlock Tag = (value 3)) 
         (propertyBlock Caption = (value 'hello')) 
@@ -391,10 +393,11 @@ end
     end) 
 &lt;EOF&gt;)
 </code></pre>
-<p><strong>Note:</strong> The output above was manually modified with newlines for readability purposes, to ultimately demonstrate the presence of hierarchy. The real output is actually a continuous line, and looks like this:</p>
-<pre><code class="language-shell">(file (block inherited frmActions : TfrmActions (propertyBlock Tag = (value 3)) (propertyBlock Caption = (value 'hello')) (block inherited pnlTitle : TfrmTitleBar (propertyBlock Color = (value clWhite)) (propertyBlock ParentBackground = (value False)) end) (block inherited pnlError : TfrmError (block inherited lblMessage : TcxLabel (propertyBlock AnchorY = (value -18)) (propertyBlock FloatAnchorY = (value 18.7283)) end) end) (block object gvListUser : TcxGridDBColumn (propertyBlock Caption = (value 'Test')) (propertyBlock DataBinding.FieldName = (value 'TestUser')) (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock FieldName = (value 'fullName')) (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 100)) end) &gt;))) (propertyBlock Properties.Alignment.Vert = (value taVCencter)) (propertyBlock Height = (value 20)) (propertyBlock Properties.DateButtons = (value [btnToday])) end) (block object testItemHchy : TestItemHchy (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 80)) end) (item item (propertyBlock Width = (value 200)) (propertyBlock FieldName = (value 'testing')) end) &gt;))) (propertyBlock Width = (value 282)) end) (block inherited testFields : TestFields (propertyBlock Indexes = (value (methodLS &lt; &gt;))) (propertyBlock SortOptions = (value [])) (propertyBlock OtherSortOptions = (value [test1, test2, test3])) end) (block inherited testMultipleInheritance : TestMultipleInheritance (block inherited inhOne : InhOne (block inherited inhTwo : InhTwo (block inherited inhThree : InhThree (block object deepObj : DeepObj (propertyBlock Height = (value 10)) (propertyBlock Width = (value 20)) (propertyBlock Top = (value 30)) end) end) end) end) end) end) &lt;EOF&gt;)
+<p><span style="color:red">NOTE:</span> The output above was manually modified with newlines for readability purposes, to ultimately demonstrate the presence of hierarchy. </p>
+<p>The real output is actually a continuous line, and looks like this:</p>
+<pre><code class="language-ini">(file (block inherited frmActions : TfrmActions (propertyBlock Tag = (value 3)) (propertyBlock Caption = (value 'hello')) (block inherited pnlTitle : TfrmTitleBar (propertyBlock Color = (value clWhite)) (propertyBlock ParentBackground = (value False)) end) (block inherited pnlError : TfrmError (block inherited lblMessage : TcxLabel (propertyBlock AnchorY = (value -18)) (propertyBlock FloatAnchorY = (value 18.7283)) end) end) (block object gvListUser : TcxGridDBColumn (propertyBlock Caption = (value 'Test')) (propertyBlock DataBinding.FieldName = (value 'TestUser')) (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock FieldName = (value 'fullName')) (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 100)) end) &gt;))) (propertyBlock Properties.Alignment.Vert = (value taVCencter)) (propertyBlock Height = (value 20)) (propertyBlock Properties.DateButtons = (value [btnToday])) end) (block object testItemHchy : TestItemHchy (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 80)) end) (item item (propertyBlock Width = (value 200)) (propertyBlock FieldName = (value 'testing')) end) &gt;))) (propertyBlock Width = (value 282)) end) (block inherited testFields : TestFields (propertyBlock Indexes = (value (methodLS &lt; &gt;))) (propertyBlock SortOptions = (value [])) (propertyBlock OtherSortOptions = (value [test1, test2, test3])) end) (block inherited testMultipleInheritance : TestMultipleInheritance (block inherited inhOne : InhOne (block inherited inhTwo : InhTwo (block inherited inhThree : InhThree (block object deepObj : DeepObj (propertyBlock Height = (value 10)) (propertyBlock Width = (value 20)) (propertyBlock Top = (value 30)) end) end) end) end) end) end) &lt;EOF&gt;)
 </code></pre>
-<p>This is the real output. Its contents are the same as the edited example preceding it, and still identifies hierarchy correctly -&gt; <strong>notice</strong> the <code>end</code> closures at the end of the output.</p>
+<p>Its contents are the same as the edited example preceding it, and still identifies hierarchy correctly; <strong>notice</strong> the <code>end</code> closures at the end of the output.</p>
 <h3 id="tree-visualization">Tree Visualization</h3>
 <p>Thankfully, to simplify our lives, <em>ANTLR</em> provides a graphical representation of trees. The test is very simple:</p>
 <p><code>grun DelphiDFM file -gui test.dfm</code></p>
@@ -414,7 +417,7 @@ end
 <h3 id="features">Features</h3>
 <p>A neat feature of <em>ANTLR</em> is that it will identify missing tokens for us, which can also be visualized in the parse tree GUI.</p>
 <p>For example, we introduced two errors in our <code>test.dfm</code> pseudo-code, by removing the colon from the inherited object <code>testFields</code>, and the closing array bracket in <code>OtherSortOptions</code>:</p>
-<pre><code>...
+<pre><code class="language-ini">...
 
 inherited testFields TestFields
     Indexes = &lt;&gt;
@@ -428,14 +431,14 @@ end
 <p><code>grun DelphiDFM file -gui test.dfm</code></p>
 <p><img alt="Missing tokens in parse tree GUI" src="../assets/test-gui-tree-errors.png" /></p>
 <p>We also get the following output in our terminal:</p>
-<pre><code class="language-shell">line 42:27 token recognition error at: '[test1, test2, test3\n    end\n    inherited testMultipleInheritance: TestMultipleInheritance\n        inherited inhOne: InhOne\n            inherited inhTwo: InhTwo\n                inherited inhThree: InhThree\n                    object deepObj: DeepObj\n                        Height = 10\n                        Width = 20\n                        Top = 30\n                    end\n                end\n            end\n        end\n    end\nend'
+<pre><code class="language-bash">line 42:27 token recognition error at: '[test1, test2, test3\n    end\n    inherited testMultipleInheritance: TestMultipleInheritance\n        inherited inhOne: InhOne\n            inherited inhTwo: InhTwo\n                inherited inhThree: InhThree\n                    object deepObj: DeepObj\n                        Height = 10\n                        Width = 20\n                        Top = 30\n                    end\n                end\n            end\n        end\n    end\nend'
 line 39:25 missing ':' at 'TestFields'
 line 57:3 mismatched input '&lt;EOF&gt;' expecting {'&lt;', ARRAY, ID, FLOAT, INT, STRING}
 </code></pre>
 <p>This becomes highly useful since we have multpiple ways of identifying issues. Note that errors also get printed when using commands such as <code>grun DelphiDFM file -tokens test.dfm</code> where we list all tokens in a file, just like we did previously.</p>
 <h3 id="important">Important</h3>
 <p>If the grammar file is modified (in our case <code>DelphiDFM.g4</code>), it's always necessary to regenerate and recompile from scratch to avoid stale <code>.class</code> files:</p>
-<pre><code class="language-shell">rm *.java *.class *.tokens *.interp
+<pre><code>rm *.java *.class *.tokens *.interp
 
 antlr4 DelphiDFM.g4
 
