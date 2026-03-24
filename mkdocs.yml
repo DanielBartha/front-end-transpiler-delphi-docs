@@ -25,5 +25,6 @@ nav:
     - Matching Comments and Whitespace: gd-comments-whitespace.md
     - Refining the Grammar: gd-refine.md
   - Parsing a DFM: dfm-parsing.md
+  - From Parse Trees to Abstract Syntax Trees: cst-to-ast.md
 plugins:
   - search
