@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Matching Floating-Point Numbers - Front End Transpiler Documentation</title>
+    <title>From Parse Trees to Abstract Syntax Trees - Front End Transpiler Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Matching Floating-Point Numbers";
-        var mkdocs_page_input_path = "gd-floats.md";
+        var mkdocs_page_name = "From Parse Trees to Abstract Syntax Trees";
+        var mkdocs_page_input_path = "cst-to-ast.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -45,14 +45,12 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Grammar Design</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Matching Floating-Point Numbers</a>
-    <ul class="current">
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../gd-comments-whitespace/">Matching Comments and Whitespace</a>
                   </li>
@@ -63,8 +61,14 @@
                 <li class="toctree-l1"><a class="reference internal" href="../dfm-parsing/">Parsing a DFM</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../cst-to-ast/">From Parse Trees to Abstract Syntax Trees</a>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">From Parse Trees to Abstract Syntax Trees</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#parse-tree-concrete-syntax-tree">Parse Tree (Concrete Syntax Tree)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#abstract-syntax-tree-ast">Abstract Syntax Tree (AST)</a>
+    </li>
+    </ul>
                 </li>
               </ul>
       </div>
@@ -81,8 +85,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Grammar Design</li>
-      <li class="breadcrumb-item active">Matching Floating-Point Numbers</li>
+      <li class="breadcrumb-item active">From Parse Trees to Abstract Syntax Trees</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -91,51 +94,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="matching-floating-point-numbers">Matching Floating-Point Numbers</h1>
-<p>Floating-point numbers are more complex to represent and additional rules will need to be implemented because of them. Take the example below:</p>
-<p><code>../../DelphiDFM.g4</code></p>
-<pre><code class="language-yaml">grammar DelphiDFM ;
-
-// Parser Rules
-file : object
-object : objectElements ;
-objectElements : CAPTION '=' STRING | LEFT '=' INT | TOP '=' FLOAT | ... ;
-
-// Lexer Rules
-CAPTION : 'Caption' ;
-LEFT : 'Left' ;
-TOP : 'Top' ;
-
-ID : [a-zA-Z]+ ;
-FLOAT : DIGIT+ '.' DIGIT* | '.' DIGIT+ ;
-INT : DIGIT+ ;
-
-fragment
-DIGIT : [0-9] ;     
-
-STRING : '\'' .*? '\'' ;
-</code></pre>
-<p><strong>Notes</strong></p>
+                <h1 id="cst-to-ast-in-antlr4">CST to AST in ANTLR4</h1>
+<p>The main goal is to modernize the legacy DFM front end code into modern React/TypeScript alternatives. To achieve this, we will need to convert our parse trees into abstract syntax trees.</p>
+<p>First, let's understand the difference between the two tree formats.</p>
+<h3 id="parse-tree-concrete-syntax-tree">Parse Tree (Concrete Syntax Tree)</h3>
+<p>A Parse Tree is a hierarchical representation of the syntactic structure of a program according to the rules of a formal grammar. It captures the complete structure of the input code, including all the syntactic details, such as parentheses, semicolons, and other language-specific constructs. Each node in the tree corresponds to a specific grammar rule or terminal symbol in the input code. Parse trees are often generated by a parser during the initial phase of compilation.</p>
+<p><strong>Advantages of Parse Trees:</strong></p>
 <ul>
 <li>
-<p>the order of precedence in the lexer rules, specifically <code>FLOAT</code> and <code>INT</code>. If their order would be reversed, an ambiguity conflict would occur. For example, if the lexer sees the sequence <code>123</code> it could match either. Thus, if <code>INT</code> is defined first, the lexer will always prefer <code>INT</code> and never reach <code>FLOAT</code>.</p>
+<p><em>Preserve all syntactic details:</em> Parse trees retain all the syntactic elements of the input code, making them useful for certain analysis tasks, such as source code transformations or code generation.</p>
 </li>
 <li>
-<p>the (now) correct specification of <code>CAPTION</code> in <em>objectElements</em>.</p>
+<p><em>Direct mapping to grammar rules:</em> Each node in the parse tree corresponds to a specific production rule in the grammar, facilitating a one-to-one mapping between the code and its syntactic representation.</p>
+</li>
+</ul>
+<p><strong>Disadvantages of Parse Trees:</strong></p>
+<ul>
+<li>
+<p><em>Redundant information:</em> Parse trees can contain a lot of redundant information due to their detailed representation of the syntax, making them larger and potentially more complex than necessary.</p>
 </li>
 <li>
-<p>the addition of the helper rule <code>DIGIT</code>, to not write <code>[0-9]</code> everywhere.</p>
+<p><em>Not optimized for analysis:</em> The parse tree may not be the most efficient representation for performing certain analysis tasks, as it retains information that is not always relevant for these tasks.</p>
+</li>
+</ul>
+<h3 id="abstract-syntax-tree-ast">Abstract Syntax Tree (AST)</h3>
+<p>An Abstract Syntax Tree is an abstracted representation of the syntactic structure of a program, focusing on the essential elements and their relationships. It captures the underlying structure and semantics of the code, excluding unnecessary syntactic details. ASTs are usually generated from parse trees as a subsequent step in the compilation process, often during the semantic analysis phase.</p>
+<p><strong>Advantages of Abstract Syntax Trees:</strong></p>
+<ul>
+<li>
+<p><em>Compact and focused representation:</em> ASTs eliminate redundant details and focus on the essential structure of the program, providing a more concise representation of the code.</p>
 </li>
 <li>
-<p><code>DIGIT</code> is prefixed with <code>fragment</code> to let ANTLR know that the rule will be used only by other lexical rules. It is not a token in and of itself.</p>
+<p><em>Semantically meaningful:</em> ASTs capture the semantic structure of the code, making them well-suited for various analysis tasks, such as type checking, optimization, and interpretation.</p>
+</li>
+<li>
+<p><em>Language-independent:</em> ASTs can be designed to represent the essential elements of the code in a language-independent manner, allowing for easier analysis and transformation across different programming languages.</p>
+</li>
+</ul>
+<p><strong>Disadvantages of Abstract Syntax Trees:</strong></p>
+<ul>
+<li>
+<p><em>Loss of syntactic details:</em> ASTs abstract away certain syntactic elements, which may be required for certain analysis or transformation tasks that rely on detailed syntax information.</p>
+</li>
+<li>
+<p><em>Additional processing required:</em> Generating an AST requires an additional step after parsing, adding some overhead to the compilation process.</p>
 </li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../gd-init/" class="btn btn-neutral float-left" title="Design Initiation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../gd-comments-whitespace/" class="btn btn-neutral float-right" title="Matching Comments and Whitespace">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../dfm-parsing/" class="btn btn-neutral float-left" title="Parsing a DFM"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -159,10 +168,8 @@ STRING : '\'' .*? '\'' ;
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../gd-init/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../dfm-parsing/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../gd-comments-whitespace/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
