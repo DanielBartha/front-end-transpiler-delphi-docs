@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Design Initiation - Front End Transpiler Documentation</title>
+    <title>Additional Features - Front End Transpiler Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Design Initiation";
-        var mkdocs_page_input_path = "gd-init.md";
+        var mkdocs_page_name = "Additional Features";
+        var mkdocs_page_input_path = "features.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -45,12 +45,10 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Grammar Design</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Design Initiation</a>
-    <ul class="current">
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
                   </li>
@@ -60,7 +58,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Parsing</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../parsing-intro/">Introduction</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../antlr-setup/">ANTLR4 Setup</a>
@@ -69,7 +67,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../trees/">Parse Trees in ANTLR</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../features/">Additional Features</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Additional Features</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#important">Important</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
@@ -91,8 +97,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Grammar Design</li>
-      <li class="breadcrumb-item active">Design Initiation</li>
+          <li class="breadcrumb-item">Parsing</li>
+      <li class="breadcrumb-item active">Additional Features</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -101,98 +107,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="design-initiation">Design Initiation</h2>
-<p>Considering top-down parsing, we start from the coarsest elements and descend in levels of granularity. Designing starts with natural language. Ergo, the formal definition of Delphi VCL <code>.dfm</code> files.</p>
-<p><strong>Formal Definition</strong> - Delphi Form Module files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.</p>
-<p>The keyword here is <strong>FILE(S)</strong>.
-Ergo, <em>file</em> becomes the <strong>RULE NAME</strong>.</p>
-<pre><code class="language-yaml">file : «sequence of component elements that are terminated by newlines» ;
-</code></pre>
-<p>Then, we step down a level in granularity by describing elements identified on the right side of the start rule. Typically, references to either tokens or yet-to-be-defined rules.</p>
-<p>Tokens, are atomic elements of a parser grammar, such as words, punctuation, operators, etc.
-Rule references, are other language structures which need to be broken down into more detail, such as <em>object</em>.</p>
-<p>Descending further into the next granularity level, for instance, <em>object</em> should represent a sequence of elements which need to be contained within <em>file</em>. For example: <code>Caption</code>, <code>Left</code>, <code>Top</code>, <code>Width</code>, etc.</p>
-<p>Then, a pseudo-code of Parser Rules looks like this:</p>
-<pre><code class="language-yaml">file : «sequence of terminals such as object or inherited, that are terminated by newlines» ;
-object : «sequence of objectElements» ;
-objectElements : «sequence of alternative terminal tokens» ;
-</code></pre>
-<p>Descending further, now we know what the terminal tokens of <em>objectElements</em> should contain. Therefore, we define Lexer and Parser Rules for non-terminal and terminal tokens respectively. For instance:</p>
-<p><code>../../DelphiDFM.g4</code></p>
-<pre><code class="language-yaml">grammar DelphiDFM ;
+                <h1 id="features">Features</h1>
+<p>A neat feature of <em>ANTLR</em> is that it will identify missing tokens for us, which can also be visualized in the parse tree GUI.</p>
+<p>For example, we introduced two errors in our <code>test.dfm</code> pseudo-code, by removing the colon from the inherited object <code>testFields</code>, and the closing array bracket in <code>OtherSortOptions</code>:</p>
+<pre><code class="language-ini">...
 
-// Parser Rules
-file : object
-object : objectElements ;
-objectElements : CAPTION | LEFT '=' INT | ... ;
-
-// Lexer Rules
-CAPTION : 'Caption' ;
-LEFT : 'Left' ;
-INT : [0-9]+ ;
-ID : [a-zA-Z]+ ;
-STRING : '\'' .*? '\'' ;    // STRING reads as anything between single quotes
-</code></pre>
-<p>Continuing until no further rules can be defined.</p>
-<p><strong>Notes</strong></p>
-<ul>
-<li>
-<p>grammars always start with a grammar header. In our case, the grammar is called <code>DelphiDFM</code>, and must match the file name: <code>DelphiDFM.g4</code>.</p>
-</li>
-<li>
-<p>the <code>+</code> in <code>INT</code> and <code>ID</code> above, represent an ANTLR specific subrule which describes an arbitrarily long sequence. Essentially means to encode a sequence of one or more elements.</p>
-</li>
-<li>
-<p>the zero-or-more operator <code>*</code> specifies that a list can be empty. Example: <code>INT*</code>. This operator is analogous to a loop in programming languages, ANTLR-generated parsers implement them in this way as well.</p>
-</li>
-<li>
-<p>the alternative operator <code>|</code> specifies alternative options of non-terminals and terminals.</p>
-</li>
-<li>
-<p>the <code>?</code> subrule is a special zero-or-one sequence, and specifies optional constructs. For instance, <code>given a token 'x', if 'x?' then match 'x' or skip it</code>.</p>
-</li>
-<li>
-<p>single quotes in ANTLR are reserved, therefore they need to be escaped like so: <code>'\''</code>.</p>
-</li>
-<li>
-<p>ANTLR resolves potential ambiguity between lexical rules by favoring the rule <em>specified first</em>. Take the following example:</p>
-</li>
-</ul>
-<p><code>../../AmbiguousDelphiDFM.g4</code></p>
-<pre><code class="language-yaml">grammar AmbiguousDelphiDFM ;
-
-file : functionDeclaration | FOR | ... ;
-functionDeclaration : 'for' ;
-
-...
-
-// Lexer Rules
-ID  : [a-zA-Z]+ ;
-FOR : 'for' ;
+inherited testFields TestFields
+    Indexes = &lt;&gt;
+    SortOptions = []
+    OtherSortOptions = [test1, test2, test3
+end
 
 ...
 </code></pre>
-<p>In the example above, since <code>FOR</code> can be evaluated using <code>ID</code> as well, we have an ambiguity conflict. The correct solution is to specify rules in order of precedence:</p>
-<pre><code class="language-yaml">grammar NoLongerAmbiguousDelphiDFM ;
-
-file : functionDeclaration | FOR | ... ;
-functionDeclaration : 'for' ;
-
-...
-
-// Lexer Rules
-FOR : 'for' ;
-ID  : [a-zA-Z]+ ;
-
-...
+<p>Let's see what happens if we output a parse tree using the <code>-gui</code> command:</p>
+<p><code>grun DelphiDFM file -gui test.dfm</code></p>
+<p><img alt="Missing tokens in parse tree GUI" src="../assets/test-gui-tree-errors.png" /></p>
+<p>We also get the following output in our terminal:</p>
+<pre><code class="language-bash">line 42:27 token recognition error at: '[test1, test2, test3\n    end\n    inherited testMultipleInheritance: TestMultipleInheritance\n        inherited inhOne: InhOne\n            inherited inhTwo: InhTwo\n                inherited inhThree: InhThree\n                    object deepObj: DeepObj\n                        Height = 10\n                        Width = 20\n                        Top = 30\n                    end\n                end\n            end\n        end\n    end\nend'
+line 39:25 missing ':' at 'TestFields'
+line 57:3 mismatched input '&lt;EOF&gt;' expecting {'&lt;', ARRAY, ID, FLOAT, INT, STRING}
 </code></pre>
-<p>This way, the literal <em>for</em> will always be tokenized as <code>FOR</code>, and never as <code>ID</code> in the grammar.</p>
+<p>This becomes highly useful since we have multpiple ways of identifying issues. Note that errors also get printed when using commands such as <code>grun DelphiDFM file -tokens test.dfm</code> where we list all tokens in a file, just like we did previously.</p>
+<h2 id="important">Important</h2>
+<p>If the grammar file is modified (in our case <code>DelphiDFM.g4</code>), it's always necessary to regenerate and recompile from scratch to avoid stale <code>.class</code> files:</p>
+<pre><code>rm *.java *.class *.tokens *.interp
+
+antlr4 DelphiDFM.g4
+
+javac DelphiDFM*.java
+</code></pre>
+<h3 id="conclusion">Conclusion</h3>
+<p>We learned the general concepts needed to write a language grammar for parsing with <em>ANTLRv4</em>. Then we applied the concepts to write our own DFM grammar, which we successfully parsed using the <code>test.dfm</code> pseudo-code. We also learned how to check all tokens of a file, and decomposed them to understand how they are built. Then we checked represented all identified tokens in a visual parse tree. Finally, we have taken a look at some built-in error reporting features of <em>ANTLRv4</em>.</p>
+<p>In conclusion, the aim of this documentation was to provide the necessary context for building a language grammar. And additionally, to offer a quick way of parsing a grammar, by using <em>ANTLRv4</em>.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../gd-intro/" class="btn btn-neutral float-left" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../gd-floats/" class="btn btn-neutral float-right" title="Matching Floating-Point Numbers">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../trees/" class="btn btn-neutral float-left" title="Parse Trees in ANTLR"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cst-to-ast/" class="btn btn-neutral float-right" title="From Parse Trees to Abstract Syntax Trees">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -216,10 +169,10 @@ ID  : [a-zA-Z]+ ;
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../gd-intro/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../trees/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../gd-floats/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../cst-to-ast/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

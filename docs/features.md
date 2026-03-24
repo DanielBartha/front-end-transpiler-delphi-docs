@@ -44,7 +44,7 @@ antlr4 DelphiDFM.g4
 javac DelphiDFM*.java
 ```
 
-### Conclusion
+# Conclusion
 
 We learned the general concepts needed to write a language grammar for parsing with *ANTLRv4*. Then we applied the concepts to write our own DFM grammar, which we successfully parsed using the `test.dfm` pseudo-code. We also learned how to check all tokens of a file, and decomposed them to understand how they are built. Then we checked represented all identified tokens in a visual parse tree. Finally, we have taken a look at some built-in error reporting features of *ANTLRv4*.
 

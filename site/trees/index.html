@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Parse Trees in ANTLR - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Parse Trees in ANTLR";
+        var mkdocs_page_input_path = "trees.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Parsing</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../antlr-setup/">ANTLR4 Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dfm-parsing/">DFM Code Parsing</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Parse Trees in ANTLR</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#tree-visualization">Tree Visualization</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../features/">Additional Features</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../cst-to-ast/">From Parse Trees to Abstract Syntax Trees</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Parsing</li>
+      <li class="breadcrumb-item active">Parse Trees in ANTLR</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="parse-trees-in-antlr">Parse Trees in ANTLR</h1>
+<p>So what if we want to see our parse tree? We use the following command for that:</p>
+<p><code>grun DelphiDFM file -tree test.dfm</code></p>
+<p>And our output:</p>
+<pre><code class="language-yaml">(file 
+    (block inherited frmActions : TfrmActions 
+        (propertyBlock Tag = (value 3)) 
+        (propertyBlock Caption = (value 'hello')) 
+        (block inherited pnlTitle : TfrmTitleBar 
+            (propertyBlock Color = (value clWhite)) 
+            (propertyBlock ParentBackground = (value False)) 
+        end) 
+
+        (block inherited pnlError : TfrmError 
+            (block inherited lblMessage : TcxLabel 
+                (propertyBlock AnchorY = (value -18)) 
+                (propertyBlock FloatAnchorY = (value 18.7283)) 
+            end) 
+        end) 
+
+        (block object gvListUser : TcxGridDBColumn 
+            (propertyBlock Caption = (value 'Test')) 
+            (propertyBlock DataBinding.FieldName = (value 'TestUser')) 
+            (propertyBlock Properties.ListColumns = (value 
+                (methodLS &lt; (item item 
+                    (propertyBlock FieldName = (value 'fullName')) 
+                    (propertyBlock Fixed = (value True)) 
+                    (propertyBlock Width = (value 100)) 
+                end) &gt;))) 
+            (propertyBlock Properties.Alignment.Vert = (value taVCencter)) 
+            (propertyBlock Height = (value 20)) 
+            (propertyBlock Properties.DateButtons = (value [btnToday])) 
+        end) 
+
+        (block object testItemHchy : TestItemHchy 
+            (propertyBlock Properties.ListColumns = (value 
+                (methodLS &lt; (item item 
+                    (propertyBlock Fixed = (value True)) 
+                    (propertyBlock Width = (value 80)) 
+                end) 
+                (item item 
+                    (propertyBlock Width = (value 200)) 
+                    (propertyBlock FieldName = (value 'testing')) 
+                end) &gt;))) 
+            (propertyBlock Width = (value 282)) 
+        end) 
+
+        (block inherited testFields : TestFields 
+            (propertyBlock Indexes = (value (methodLS &lt; &gt;))) 
+            (propertyBlock SortOptions = (value [])) 
+            (propertyBlock OtherSortOptions = (value [test1, test2, test3]))
+        end) 
+
+        (block inherited testMultipleInheritance : TestMultipleInheritance
+            (block inherited inhOne : InhOne 
+                (block inherited inhTwo : InhTwo 
+                    (block inherited inhThree : InhThree 
+                        (block object deepObj : DeepObj 
+                            (propertyBlock Height = (value 10)) 
+                            (propertyBlock Width = (value 20)) 
+                            (propertyBlock Top = (value 30)) 
+                        end) 
+                    end) 
+                end) 
+            end) 
+        end) 
+    end) 
+&lt;EOF&gt;)
+</code></pre>
+<p><span style="color:red">NOTE:</span> The output above was manually modified with newlines for readability purposes, to ultimately demonstrate the presence of hierarchy. </p>
+<p>The real output is actually a continuous line, and looks like this:</p>
+<pre><code class="language-ini">(file (block inherited frmActions : TfrmActions (propertyBlock Tag = (value 3)) (propertyBlock Caption = (value 'hello')) (block inherited pnlTitle : TfrmTitleBar (propertyBlock Color = (value clWhite)) (propertyBlock ParentBackground = (value False)) end) (block inherited pnlError : TfrmError (block inherited lblMessage : TcxLabel (propertyBlock AnchorY = (value -18)) (propertyBlock FloatAnchorY = (value 18.7283)) end) end) (block object gvListUser : TcxGridDBColumn (propertyBlock Caption = (value 'Test')) (propertyBlock DataBinding.FieldName = (value 'TestUser')) (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock FieldName = (value 'fullName')) (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 100)) end) &gt;))) (propertyBlock Properties.Alignment.Vert = (value taVCencter)) (propertyBlock Height = (value 20)) (propertyBlock Properties.DateButtons = (value [btnToday])) end) (block object testItemHchy : TestItemHchy (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 80)) end) (item item (propertyBlock Width = (value 200)) (propertyBlock FieldName = (value 'testing')) end) &gt;))) (propertyBlock Width = (value 282)) end) (block inherited testFields : TestFields (propertyBlock Indexes = (value (methodLS &lt; &gt;))) (propertyBlock SortOptions = (value [])) (propertyBlock OtherSortOptions = (value [test1, test2, test3])) end) (block inherited testMultipleInheritance : TestMultipleInheritance (block inherited inhOne : InhOne (block inherited inhTwo : InhTwo (block inherited inhThree : InhThree (block object deepObj : DeepObj (propertyBlock Height = (value 10)) (propertyBlock Width = (value 20)) (propertyBlock Top = (value 30)) end) end) end) end) end) end) &lt;EOF&gt;)
+</code></pre>
+<p>Its contents are the same as the edited example preceding it, and still identifies hierarchy correctly; <strong>notice</strong> the <code>end</code> closures at the end of the output.</p>
+<h2 id="tree-visualization">Tree Visualization</h2>
+<p>Thankfully, to simplify our lives, <em>ANTLR</em> provides a graphical representation of trees. The test is very simple:</p>
+<p><code>grun DelphiDFM file -gui test.dfm</code></p>
+<p>The output:</p>
+<p><img alt="Graphical Parse Tree of the test.dfm File" src="../assets/antlr4_parse_tree.png" /></p>
+<p>This gives us a much easier to read output of our parse tree.</p>
+<p>Notice that:</p>
+<ul>
+<li>hierarchy is correctly represented.</li>
+<li>each <code>block</code> correclty begins and ends.</li>
+<li>we correctly represent positive and negative values for both integers and floating-point values.</li>
+<li>we have correctly accounted for multiple property methods.</li>
+<li><code>item</code> list syntax for collection properties correctly begin and end.</li>
+<li>empty <code>item</code> lists and <code>arrays</code> are correctly parsed.</li>
+<li>we even tested deep hierarchy.</li>
+</ul>
+<p>Next up, we'll take a look at some additional useful features of <em>ANTLR</em>, and mention some important methodologies to keep in mind.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../dfm-parsing/" class="btn btn-neutral float-left" title="DFM Code Parsing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../features/" class="btn btn-neutral float-right" title="Additional Features">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>Copyright 2026 Estrategy© All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../dfm-parsing/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../features/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

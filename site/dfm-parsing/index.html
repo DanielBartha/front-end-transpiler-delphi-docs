@@ -59,37 +59,27 @@
               </ul>
               <p class="caption"><span class="caption-text">Parsing</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing-intro/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../antlr-setup/">ANTLR4 Setup</a>
+                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">DFM Code Parsing</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    <li class="toctree-l2"><a class="reference internal" href="#test-against-a-dfm-file">Test Against a DFM File</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lets-parse">Let's Parse!</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#test-against-a-dfm-file">Test Against a DFM File</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#token-testing">Token Testing</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#token-decomposition">Token Decomposition</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#trees">Trees</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#tree-visualization">Tree Visualization</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#features">Features</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#important">Important</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
-    </li>
         </ul>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../trees/">Parse Trees in ANTLR</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../features/">Additional Features</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
@@ -122,53 +112,6 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="dfm-parsing-with-antlr4">DFM Parsing with ANTLR4</h1>
-<p>In this section we will leverage our refined DFM grammar to parse an example DFM file. We will describe the techniques needed to parse a DFM file with <em>ANTLR4</em>, and examine the outputs.</p>
-<h3 id="setup">Setup</h3>
-<p>For parsing a DFM file with our grammar, we will first need to set up <em>ANTLR</em>.</p>
-<h5 id="prerequisites">Prerequisites</h5>
-<ul>
-<li><a href="https://www.oracle.com/java/technologies/downloads/#jdk26-windows">Java JDK</a> (latest but earlier versions should work) </li>
-<li><a href="https://www.antlr.org/download.html">ANTLRv4 complete jar</a></li>
-</ul>
-<p><em>ANTLR</em> can be manually downloaded from the source above, or using the command line tool <code>curl</code> to grab it:</p>
-<pre><code class="language-bash">$ cd /usr/local/lib
-# check latest version (at the time of writing this documentation 4.13.2 is the latest)
-$ curl -O http://www.antlr.org/download/antlr-4.13.2-complete.jar
-</code></pre>
-<p><strong>Instructions:</strong></p>
-<ol>
-<li>Copy the downloaded tool where usually third-party java libraries live (up to preference); Example: <code>/usr/local/lib</code> or <code>C:\Program Files\Java\libs</code></li>
-<li>Add tool to <code>CLASSPATH</code> and to startup script (Example: <code>.bash_profile</code>)</li>
-<li>Optional: also add aliases to startup script to simplify the usage of <em>ANTLR</em></li>
-</ol>
-<p><strong>Linux/MacOS:</strong></p>
-<pre><code class="language-bash"># 1.
-sudo cp antlr-4.x-complete.jar /usr/local/lib/
-# 2. and 3.
-# add this to .bash_profile
-export CLASSPATH=&quot;.:/usr/local/lib/antlr-4.x-complete.jar:$CLASSPATH&quot;
-# simplify the use of the tool to generate lexer and parser
-alias antlr4='java -jar /usr/local/lib/antlr-4.x-complete.jar'
-# simplify the use of the tool to test the generated code
-alias grun='java org.antlr.v4.gui.TestRig'
-# set up alias for java compiler
-alias javac='javac -cp &quot;.:/usr/local/lib/antlr-4.x-complete.jar&quot;'
-</code></pre>
-<p><strong>Windows:</strong></p>
-<pre><code class="language-bash"># 1. Copy antlr-4.x-complete.jar in C:\Program Files\Java\libs (or wherever preferred)
-# 2. Append the location of ANTLR to the CLASSPATH variable, or create a CLASSPATH variable if haven't already done so
-# by pressing WIN + R and typing sysdm.cpl, then selecting Advanced (tab) &gt; Environment variables &gt; System Variables
-# CLASSPATH -&gt; .;C:\Program Files\Java\libs\antlr-4.x-complete.jar;%CLASSPATH%
-# 3. Add aliases
-# create antlr4.bat  
-java org.antlr.v4.Tool %* 
-# create grun.bat  
-java org.antlr.v4.gui.TestRig %*
-# put them in the system PATH or any of the directories included in PATH
-</code></pre>
-<p>Replace <code>4.x</code> with the downloaded version.</p>
-<p><strong>Notice</strong>: we will be assuming that the reader is using the same aliases as the ones specified above.</p>
-<h2 id="lets-parse">Let's Parse!</h2>
 <p>Now that the setup is complete, the time has come to parse some DFM code.</p>
 <p>First things first, let's copy our DFM grammar into a fresh directory, included in a file with the <code>.g4</code> extension.</p>
 <p><strong>Notice</strong>: remember that the file name has to correspond to the grammar specification in the <code>.g4</code> file.</p>
@@ -215,7 +158,7 @@ DelphiDFMListener.java
 </code></pre>
 <p>Aha! Now we can see our parser rules as well.</p>
 <p><img src="https://media1.tenor.com/m/sqYV7D2euF8AAAAd/kronk-oh-yeah-its-all-coming-together.gif" alt="funny gif" width="300"/></p>
-<h3 id="test-against-a-dfm-file">Test Against a DFM File</h3>
+<h2 id="test-against-a-dfm-file">Test Against a DFM File</h2>
 <p>The only thing we are missing is a test file that we should parse. The DFM file below was conceived to test all rules we previously defined in our grammar:</p>
 <p><code>../dir/test.dfm</code></p>
 <pre><code class="language-ini">inherited frmActions: TfrmActions
@@ -331,135 +274,13 @@ end
 <li><code>&lt;ID&gt;</code> indicates the type of token.</li>
 <li>finally, <code>1:10</code> indicates that it is on line 1 (from 1), and is at character position 10 (starting from zero and counting tabs as a single character).</li>
 </ul>
-<h3 id="trees">Trees</h3>
-<p>So what if we want to see our parse tree? Let's see the command for that:</p>
-<p><code>grun DelphiDFM file -tree test.dfm</code></p>
-<p>And our output:</p>
-<pre><code class="language-yaml">(file 
-    (block inherited frmActions : TfrmActions 
-        (propertyBlock Tag = (value 3)) 
-        (propertyBlock Caption = (value 'hello')) 
-        (block inherited pnlTitle : TfrmTitleBar 
-            (propertyBlock Color = (value clWhite)) 
-            (propertyBlock ParentBackground = (value False)) 
-        end) 
-
-        (block inherited pnlError : TfrmError 
-            (block inherited lblMessage : TcxLabel 
-                (propertyBlock AnchorY = (value -18)) 
-                (propertyBlock FloatAnchorY = (value 18.7283)) 
-            end) 
-        end) 
-
-        (block object gvListUser : TcxGridDBColumn 
-            (propertyBlock Caption = (value 'Test')) 
-            (propertyBlock DataBinding.FieldName = (value 'TestUser')) 
-            (propertyBlock Properties.ListColumns = (value 
-                (methodLS &lt; (item item 
-                    (propertyBlock FieldName = (value 'fullName')) 
-                    (propertyBlock Fixed = (value True)) 
-                    (propertyBlock Width = (value 100)) 
-                end) &gt;))) 
-            (propertyBlock Properties.Alignment.Vert = (value taVCencter)) 
-            (propertyBlock Height = (value 20)) 
-            (propertyBlock Properties.DateButtons = (value [btnToday])) 
-        end) 
-
-        (block object testItemHchy : TestItemHchy 
-            (propertyBlock Properties.ListColumns = (value 
-                (methodLS &lt; (item item 
-                    (propertyBlock Fixed = (value True)) 
-                    (propertyBlock Width = (value 80)) 
-                end) 
-                (item item 
-                    (propertyBlock Width = (value 200)) 
-                    (propertyBlock FieldName = (value 'testing')) 
-                end) &gt;))) 
-            (propertyBlock Width = (value 282)) 
-        end) 
-
-        (block inherited testFields : TestFields 
-            (propertyBlock Indexes = (value (methodLS &lt; &gt;))) 
-            (propertyBlock SortOptions = (value [])) 
-            (propertyBlock OtherSortOptions = (value [test1, test2, test3]))
-        end) 
-
-        (block inherited testMultipleInheritance : TestMultipleInheritance
-            (block inherited inhOne : InhOne 
-                (block inherited inhTwo : InhTwo 
-                    (block inherited inhThree : InhThree 
-                        (block object deepObj : DeepObj 
-                            (propertyBlock Height = (value 10)) 
-                            (propertyBlock Width = (value 20)) 
-                            (propertyBlock Top = (value 30)) 
-                        end) 
-                    end) 
-                end) 
-            end) 
-        end) 
-    end) 
-&lt;EOF&gt;)
-</code></pre>
-<p><span style="color:red">NOTE:</span> The output above was manually modified with newlines for readability purposes, to ultimately demonstrate the presence of hierarchy. </p>
-<p>The real output is actually a continuous line, and looks like this:</p>
-<pre><code class="language-ini">(file (block inherited frmActions : TfrmActions (propertyBlock Tag = (value 3)) (propertyBlock Caption = (value 'hello')) (block inherited pnlTitle : TfrmTitleBar (propertyBlock Color = (value clWhite)) (propertyBlock ParentBackground = (value False)) end) (block inherited pnlError : TfrmError (block inherited lblMessage : TcxLabel (propertyBlock AnchorY = (value -18)) (propertyBlock FloatAnchorY = (value 18.7283)) end) end) (block object gvListUser : TcxGridDBColumn (propertyBlock Caption = (value 'Test')) (propertyBlock DataBinding.FieldName = (value 'TestUser')) (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock FieldName = (value 'fullName')) (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 100)) end) &gt;))) (propertyBlock Properties.Alignment.Vert = (value taVCencter)) (propertyBlock Height = (value 20)) (propertyBlock Properties.DateButtons = (value [btnToday])) end) (block object testItemHchy : TestItemHchy (propertyBlock Properties.ListColumns = (value (methodLS &lt; (item item (propertyBlock Fixed = (value True)) (propertyBlock Width = (value 80)) end) (item item (propertyBlock Width = (value 200)) (propertyBlock FieldName = (value 'testing')) end) &gt;))) (propertyBlock Width = (value 282)) end) (block inherited testFields : TestFields (propertyBlock Indexes = (value (methodLS &lt; &gt;))) (propertyBlock SortOptions = (value [])) (propertyBlock OtherSortOptions = (value [test1, test2, test3])) end) (block inherited testMultipleInheritance : TestMultipleInheritance (block inherited inhOne : InhOne (block inherited inhTwo : InhTwo (block inherited inhThree : InhThree (block object deepObj : DeepObj (propertyBlock Height = (value 10)) (propertyBlock Width = (value 20)) (propertyBlock Top = (value 30)) end) end) end) end) end) end) &lt;EOF&gt;)
-</code></pre>
-<p>Its contents are the same as the edited example preceding it, and still identifies hierarchy correctly; <strong>notice</strong> the <code>end</code> closures at the end of the output.</p>
-<h3 id="tree-visualization">Tree Visualization</h3>
-<p>Thankfully, to simplify our lives, <em>ANTLR</em> provides a graphical representation of trees. The test is very simple:</p>
-<p><code>grun DelphiDFM file -gui test.dfm</code></p>
-<p>The output:</p>
-<p><img alt="Graphical Parse Tree of the test.dfm File" src="../assets/antlr4_parse_tree.png" /></p>
-<p>This gives us a much easier to read output of our parse tree.</p>
-<p>Notice that:</p>
-<ul>
-<li>hierarchy is correctly represented.</li>
-<li>each <code>block</code> correclty begins and ends.</li>
-<li>we correctly represent positive and negative values for both integers and floating-point values.</li>
-<li>we have correctly accounted for multiple property methods.</li>
-<li><code>item</code> list syntax for collection properties correctly begin and end.</li>
-<li>empty <code>item</code> lists and <code>arrays</code> are correctly parsed.</li>
-<li>we even tested deep hierarchy.</li>
-</ul>
-<h3 id="features">Features</h3>
-<p>A neat feature of <em>ANTLR</em> is that it will identify missing tokens for us, which can also be visualized in the parse tree GUI.</p>
-<p>For example, we introduced two errors in our <code>test.dfm</code> pseudo-code, by removing the colon from the inherited object <code>testFields</code>, and the closing array bracket in <code>OtherSortOptions</code>:</p>
-<pre><code class="language-ini">...
-
-inherited testFields TestFields
-    Indexes = &lt;&gt;
-    SortOptions = []
-    OtherSortOptions = [test1, test2, test3
-end
-
-...
-</code></pre>
-<p>Let's see what happens if we output a parse tree using the <code>-gui</code> command:</p>
-<p><code>grun DelphiDFM file -gui test.dfm</code></p>
-<p><img alt="Missing tokens in parse tree GUI" src="../assets/test-gui-tree-errors.png" /></p>
-<p>We also get the following output in our terminal:</p>
-<pre><code class="language-bash">line 42:27 token recognition error at: '[test1, test2, test3\n    end\n    inherited testMultipleInheritance: TestMultipleInheritance\n        inherited inhOne: InhOne\n            inherited inhTwo: InhTwo\n                inherited inhThree: InhThree\n                    object deepObj: DeepObj\n                        Height = 10\n                        Width = 20\n                        Top = 30\n                    end\n                end\n            end\n        end\n    end\nend'
-line 39:25 missing ':' at 'TestFields'
-line 57:3 mismatched input '&lt;EOF&gt;' expecting {'&lt;', ARRAY, ID, FLOAT, INT, STRING}
-</code></pre>
-<p>This becomes highly useful since we have multpiple ways of identifying issues. Note that errors also get printed when using commands such as <code>grun DelphiDFM file -tokens test.dfm</code> where we list all tokens in a file, just like we did previously.</p>
-<h3 id="important">Important</h3>
-<p>If the grammar file is modified (in our case <code>DelphiDFM.g4</code>), it's always necessary to regenerate and recompile from scratch to avoid stale <code>.class</code> files:</p>
-<pre><code>rm *.java *.class *.tokens *.interp
-
-antlr4 DelphiDFM.g4
-
-javac DelphiDFM*.java
-</code></pre>
-<h3 id="conclusion">Conclusion</h3>
-<p>We learned the general concepts needed to write a language grammar for parsing with <em>ANTLRv4</em>. Then we applied the concepts to write our own DFM grammar, which we successfully parsed using the <code>test.dfm</code> pseudo-code. We also learned how to check all tokens of a file, and decomposed them to understand how they are built. Then we checked represented all identified tokens in a visual parse tree. Finally, we have taken a look at some built-in error reporting features of <em>ANTLRv4</em>.</p>
-<p>In conclusion, the aim of this documentation was to provide the necessary context for building a language grammar. And additionally, to offer a quick way of parsing a grammar, by using <em>ANTLRv4</em>.</p>
+<p>In the next section, we will take a look at outputting a parse tree, based on our identified tokens. <strong>Spoiler:</strong> we will also visualize them.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../gd-refine/" class="btn btn-neutral float-left" title="Refining the Grammar"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../cst-to-ast/" class="btn btn-neutral float-right" title="From Parse Trees to Abstract Syntax Trees">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../antlr-setup/" class="btn btn-neutral float-left" title="ANTLR4 Setup"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../trees/" class="btn btn-neutral float-right" title="Parse Trees in ANTLR">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -483,10 +304,10 @@ javac DelphiDFM*.java
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../gd-refine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../antlr-setup/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../cst-to-ast/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../trees/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
