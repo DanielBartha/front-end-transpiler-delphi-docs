@@ -128,9 +128,9 @@ inherited frmActions: TfrmActions
 end
 ```
 
-### Token Testing
+## Token Testing
 
-Now we have all necessary components. First, let's take a look at all identified tokens from our `test.dfm` file. We use `grun`, which is the alias for *ANTLR's* testing rig: `org.antlr.v4.gui.TestRig`.
+Now we have all necessary components. First, let's take a look at all identified tokens from our `test.dfm` file. We use `grun`, which is our alias for *ANTLR's* testing rig: `org.antlr.v4.gui.TestRig`.
 
 We use the command:
 
@@ -172,6 +172,9 @@ And our output:
 [@30,263:263='=',<'='>,10:20]
 [@31,265:267='-18',<INT>,10:22]
 [@32,281:292='FloatAnchorY',<ID>,11:12]
+[@33,294:294='=',<'='>,11:25]
+[@34,296:302='18.7283',<FLOAT>,11:27]
+[@35,312:314='end',<'end'>,12:8]
 
 ...
 
@@ -180,7 +183,7 @@ Continued further until all tokens are consumed.
 
 **Note** that in our given command, `file` specifies the rule that needs to contain our input.
 
-##### Token Decomposition
+### Token Decomposition
 
 Now we can see an output of all identified tokens from our test file. Let's decompose a token so we understand how they are built. For instance, our second token:
 
