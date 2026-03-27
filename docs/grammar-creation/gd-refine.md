@@ -2,9 +2,15 @@
 
 Through the previous sections we have described all necessary points needed for designing an initial ANTLR-specific grammar for Delphi DFM files.
 
-Now it is time to actually put things in practice and refine the previous examples into a usable DFM grammar, since some things are missing. For instance, how do we know when an **object** block ends?; What about inheritance? What happens with nested elements?. We will be answering all these questions and more.
+Now it is time to actually put things in practice and refine the previous examples into a usable DFM grammar, since some things are missing. For instance: 
+- How do we know when an element such as **object** ends?
+- What about inheritance? 
+- What happens with nested elements?
+- etc.
 
-Let's closely examine the refined version of the grammar below. Note that alignment has changed, due to readability purposes and to adhere to *ANTLR's* conventions.
+Let's closely examine the refined version of the grammar below.
+
+But first, note that alignment has changed, due to readability purposes and to adhere to *ANTLR's* conventions. Parser and lexer rule naming has also been changed, so that we have easy-to-follow DFM-specific naming conventions.
 
 `../../DelphiDFM.g4`
 ```yaml
@@ -97,4 +103,4 @@ Additionally, notice the `'-'?` specification for the `FLOAT` and `INT` rules. W
 
 ## Conclusion
 
-That's it. Now we posess a usable DFM grammar which we can easily parse using **ANTLR4**. In the next sections we will test out our grammar with examples provided.
+That's it! Now we posess a usable DFM grammar which we can use to parse DFM code, using *ANTLR*. In the following [Parsing](parsing/index.md) chapter, we will test out our grammar by parsing some test code, and provide suitable examples.

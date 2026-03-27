@@ -1,10 +1,12 @@
 # Matching Whitespace
 
-When the parser matches comment and whitespace tokens, ideally we would like to toss them out. That way, the parser doesn't have to worry about matching optional comments and whitespace everywhere. Since DFM files cannot be conventionally commented, we will be focusing on just whitespaces.
+When the parser matches comment and whitespace tokens, ideally we would like to toss them out. That way, the parser doesn't have to worry about matching optional comments and whitespace everywhere. Since DFM files aren't conventionally commented, we will be focusing on just whitespaces.
 
 Note that in DFM files, newlines don't act as command terminators. The structure is delimited by keywords such as *object* and the property assignments are self-terminating. For instance, `Caption = 'hello'` is unambiguous on its own because the grammar knows a property is `NAME '=' VALUE`. The newline between properties is just whitespace.
 
-Defining discarded tokens has the same process as for non-discarded ones. We just have to indicate that the lexer should throw them out using the `skip` command, preceded by the `->` operator. Let's build on our previous example to learn how:
+Defining discarded tokens has the same process as for non-discarded ones. We just have to indicate that the lexer should throw them out using the `skip` command, preceded by the `->` operator.
+
+We tokenize (and toss) whitespaces like so:
 
 `../../DelphiDFM.g4`
 ```yaml

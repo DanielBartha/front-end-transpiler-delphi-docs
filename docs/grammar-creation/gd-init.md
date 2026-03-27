@@ -1,11 +1,19 @@
-## Design Initiation
+# Abstract Language Components
+
+The first step in writing a language grammar, is to understand the abstract components any grammar is composed of (in general).
+
+- `Sequence`: of elements such as values in array.
+- `Choice`: between multiple, alternative phrases (such as different kinds of statements in language).
+- `Token dependence`.
+- `Nested phrase`: self-similar language construct (ex. aithmentic expression or nested statement blocks in language).
+
+# Design Initiation
 
 Considering top-down parsing, we start from the coarsest elements and descend in levels of granularity. Designing starts with natural language. Ergo, the formal definition of Delphi VCL ```.dfm``` files.
 
 **Formal Definition** - Delphi Form Module files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.
 
-The keyword here is **FILE(S)**.
-Ergo, *file* becomes the **RULE NAME**.
+The keyword here is **FILE(S)**. Thus, we specify *file* as our entry point, becoming the **RULE NAME**.
 
 ```yaml
 file : «sequence of component elements that are terminated by newlines» ;
@@ -45,28 +53,29 @@ ID : [a-zA-Z]+ ;
 STRING : '\'' .*? '\'' ; 	// STRING reads as anything between single quotes
 ```
 
-Continuing until no further rules can be defined.
+Continuing until no further rules can be defined. Or until the first valid iteration is developed.
 
 **Notes**
 
-- grammars always start with a grammar header. In our case, the grammar is called `DelphiDFM`, and must match the file name: `DelphiDFM.g4`.
+- Grammars always start with a grammar header. In our case, the grammar is called `DelphiDFM`, and must match the file name: `DelphiDFM.g4`.
+- *ANTLRv4* allows parser and lexer rules to exist in the same `.g4` file, as opposed to previous versions.
+- The `+` in `INT` and `ID` above, represent an ANTLR specific subrule which describes an arbitrarily long sequence. Essentially means to encode a sequence of one or more elements.
+- The zero-or-more operator `*` specifies that a list can be empty. Example: `INT*`. This operator is analogous to a loop in programming languages, ANTLR-generated parsers implement them in this way as well.
+- The alternative operator `|` specifies alternative options of non-terminals and terminals.
+- The `?` subrule is a special zero-or-one sequence, and specifies optional constructs. For instance, `given a token 'x', if 'x?' then match 'x' or skip it`.
+- Single quotes in ANTLR are reserved, therefore they need to be escaped like so: `'\''`.
 
-- the `+` in `INT` and `ID` above, represent an ANTLR specific subrule which describes an arbitrarily long sequence. Essentially means to encode a sequence of one or more elements.
+# The Ambiguity Conflict
 
-- the zero-or-more operator `*` specifies that a list can be empty. Example: `INT*`. This operator is analogous to a loop in programming languages, ANTLR-generated parsers implement them in this way as well.
+*ANTLRv4* resolves ambiguity conflicts between lexical rules by favoring the rule **specified first**. 
 
-- the alternative operator `|` specifies alternative options of non-terminals and terminals.
-
-- the `?` subrule is a special zero-or-one sequence, and specifies optional constructs. For instance, `given a token 'x', if 'x?' then match 'x' or skip it`.
-
-- single quotes in ANTLR are reserved, therefore they need to be escaped like so: `'\''`.
-
-- ANTLR resolves potential ambiguity between lexical rules by favoring the rule *specified first*. Take the following example:
+In the example below, `FOR` can be evaluated using `ID` as well. Thus, we have an ambiguity conflict due to order of precedence. In this case, the literal *for* will be tokenized as `ID` first, instead of the desired `FOR`: 
 
 `../../AmbiguousDelphiDFM.g4`
 ```yaml
 grammar AmbiguousDelphiDFM ;
 
+// Parser Rules
 file : functionDeclaration | FOR | ... ;
 functionDeclaration : 'for' ;
 
@@ -77,12 +86,13 @@ ID  : [a-zA-Z]+ ;
 FOR : 'for' ;
 
 ...
+
 ```
 
-In the example above, since `FOR` can be evaluated using `ID` as well, we have an ambiguity conflict. The correct solution is to specify rules in order of precedence:
+The suitable solution, is to specify rules with correct order of precedence:
 
 ```yaml
-grammar NoLongerAmbiguousDelphiDFM ;
+grammar Non-AmbiguousDelphiDFM ;
 
 file : functionDeclaration | FOR | ... ;
 functionDeclaration : 'for' ;
@@ -94,6 +104,7 @@ FOR : 'for' ;
 ID  : [a-zA-Z]+ ;
 
 ...
+
 ```
 
 This way, the literal *for* will always be tokenized as `FOR`, and never as `ID` in the grammar.

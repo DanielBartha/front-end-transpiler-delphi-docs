@@ -19,18 +19,18 @@ theme:
 nav:
   - Home: index.md
   - Grammar Design:
-    - Introduction: grammar-creation/gd-intro.md
+    - Introduction: grammar-creation/index.md
     - Design Initiation: grammar-creation/gd-init.md
-    - Matching Floating-Point Numbers: grammar-creation/gd-floats.md
     - Matching Comments and Whitespace: grammar-creation/gd-comments-whitespace.md
+    - Matching Floating-Point Numbers: grammar-creation/gd-floats.md
     - Refining the Grammar: grammar-creation/gd-refine.md
   - Parsing:
-    - Introduction: parsing/parsing-intro.md
+    - Introduction: parsing/index.md
     - ANTLR4 Setup: parsing/antlr-setup.md
     - DFM Code Parsing: parsing/dfm-parsing.md
     - Parse Trees in ANTLR: parsing/trees.md
     - Additional Features: parsing/features.md
   - Steps Towards Transpiling:
-    - From Parse Trees to Abstract Syntax Trees: transpiling/cst-to-ast.md
+    - From Parse Trees to Abstract Syntax Trees: transpiling/index.md
 plugins:
   - search

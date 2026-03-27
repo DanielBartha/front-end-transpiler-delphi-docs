@@ -1,8 +1,8 @@
 # Setting up ANTLRv4
 
-For parsing a DFM file with our grammar, we will first need to set up *ANTLR*, its classpath, and some aliases (optionally).
+For parsing a DFM file with our grammar, we will first need to set up *ANTLR*, its classpath, and some aliases (optional, but heavily recommended).
 
-### Prerequisites
+## Prerequisites
 
 - [Java JDK](https://www.oracle.com/java/technologies/downloads/#jdk26-windows) (latest but earlier versions should work) 
 - [ANTLRv4 complete jar](https://www.antlr.org/download.html)
@@ -15,7 +15,7 @@ $ cd /usr/local/lib
 $ curl -O http://www.antlr.org/download/antlr-4.13.2-complete.jar
 ```
 
-### Instructions
+## Instructions
 
 1. Copy the downloaded tool where usually third-party java libraries live (up to preference); Example: `/usr/local/lib` or `C:\Program Files\Java\libs`
 2. Add tool to `CLASSPATH` and to startup script (Example: `.bash_profile`)
@@ -54,6 +54,6 @@ java org.antlr.v4.gui.TestRig %*
 
 Replace `4.x` with the downloaded version.
 
-**Notice**: we will be assuming that the reader is using the same aliases as the ones specified above.
+**Notice**: we will be assuming that the reader is using the same aliases as the ones specified here.
 
 In the following section, we will utilize our refined grammar to parse a `.dfm` test file. We will show how the generated parser is built up, and output some tokens.
