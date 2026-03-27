@@ -103,4 +103,4 @@ Additionally, notice the `'-'?` specification for the `FLOAT` and `INT` rules. W
 
 ## Conclusion
 
-That's it! Now we posess a usable DFM grammar which we can use to parse DFM code, using *ANTLR*. In the following [Parsing](parsing/index.md) chapter, we will test out our grammar by parsing some test code, and provide suitable examples.
+That's it! Now we posess a usable DFM grammar which we can use to parse DFM code, using *ANTLR*. In the following [Parsing](../parsing/index.md) chapter, we will test out our grammar by parsing some test code, and provide suitable examples.
