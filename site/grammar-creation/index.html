@@ -78,9 +78,11 @@
                   <li class="toctree-l1"><a class="reference internal" href="../parsing/features/">Additional Features</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
+              <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../transpiling/">From Parse Trees to Abstract Syntax Trees</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/ast-building-intro/">AST Building</a>
                   </li>
               </ul>
       </div>
@@ -110,10 +112,11 @@
                 <h1 id="designing-the-dfm-grammar">Designing the DFM Grammar</h1>
 <p>This chapter outlines the components and rules that need to be followed when desgning an ANTLR-specific grammar for Delphi DFM files. It teaches the reader to write ANTLR- and DFM-specific grammar, but also covers the fundamentals needed to wirte any language grammar (useful in case of extensions). The chapter concludes with providing a ready-to-use Delphi DFM grammar, which leverages the concepts detailed in previous sections.</p>
 <h2 id="foreword">Foreword</h2>
-<p>Everything described in this documentation overall, is specifically tailored to <strong>ANTLRv4</strong>. Using previous versions of ANTLR would result in several major issues.</p>
+<p>Everything related to parsing, is specifically tailored to <strong>ANTLRv4</strong>. Using previous versions of ANTLR would result in several major issues.</p>
 <p>The grammar creation exemplified in this chapter is specifically designed with the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> system in mind, property of <a href="https://www.estrategysoftware.com">Estrategy</a>. Although most concepts regarding grammar creation truthfully appply, this documentation and all examples provided are specifically designed with DFM files in mind.</p>
-<p>This document assumes familiarity with the general concept of lexers, parsers, grammars, parsing algorithms and methods, and some ANTLR-specific syntax. Knowledge on <em>ANTLR4</em> features is not necessarily a prerequisite, as the essential ones are detailed throughout this documentation. However, we strongly recommend taking an overview on <em>ANTLR's</em> full feature list (check for sources below).</p>
-<p><em>ANTLRv4</em> relies on the <strong>LL(k)</strong> parsing algorithm, which is a highly suitable for parsing DFM files. This documentation does not delve into such levels of granularity as parsing algorithms. If the reader wishes to understand <em>ANTLR's</em> inner workings, which also substantiate its usage for DFM parsing, we recommend the sources at the end of this section.</p>
+<p>The transpiler build detailed in this documentation, is solely based on a specific representative subset of the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> codebase.</p>
+<p>This document assumes familiarity with the general concept of lexers, parsers, grammars, parsing algorithms and methods, and some ANTLR-specific syntax. Knowledge on <em>ANTLR4</em> features is not necessarily a prerequisite, as the essential concepts are detailed throughout this documentation. However, we strongly recommend taking an overview on <em>ANTLR's</em> full feature list (check for sources below).</p>
+<p><em>ANTLRv4</em> relies on the <strong>LL(k)</strong> parsing algorithm, which is a highly suitable for parsing DFM files. This documentation does not delve into the levels of granularity of parsing algorithms. Therefore, if the reader wishes to understand <em>ANTLR's</em> inner workings, which also substantiate its usage for DFM parsing, we recommend the sources included at the end of this page.</p>
 <p>The examples provided throughout the document build upon each other. Therefore, it is necessary to understand them for the purpose of contextualizing and informing on all decisions taken.</p>
 <h3 id="sources">Sources</h3>
 <p>In case further context is needed, and the reader would like to delve deeper on the concepts and topics presented throughout this documentation, we highly recommend the following sources:</p>

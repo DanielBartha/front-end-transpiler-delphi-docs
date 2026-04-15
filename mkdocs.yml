@@ -32,6 +32,11 @@ nav:
     - Additional Features: parsing/features.md
   - Abstract Syntax Tree Generation:
     - Parse Trees vs. Abstract Syntax Trees: ast-gen/index.md
-    - AST Building: ast-gen/ast-building-intro.md
+    - Grammar Update: ast-gen/grammar-update.md
+    - Generation: ast-gen/generation.md
+    - Development:
+      - AST Builder: ast-gen/ast-build.md
+  - Transformation Rules:
+    - Introduction: transform-rules/index.md
 plugins:
   - search

@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Matching Comments and Whitespace - Front End Transpiler Documentation</title>
+    <title>AST Building - Front End Transpiler Documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Matching Comments and Whitespace";
-        var mkdocs_page_input_path = "grammar-creation/gd-comments-whitespace.md";
+        var mkdocs_page_name = "AST Building";
+        var mkdocs_page_input_path = "ast-gen/ast-building-intro.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -45,18 +45,16 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Grammar Design</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../">Introduction</a>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/">Introduction</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../gd-init/">Design Initiation</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-init/">Design Initiation</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Matching Comments and Whitespace</a>
-    <ul class="current">
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-comments-whitespace/">Matching Comments and Whitespace</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../gd-floats/">Matching Floating-Point Numbers</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-floats/">Matching Floating-Point Numbers</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../gd-refine/">Refining the Grammar</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-refine/">Refining the Grammar</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Parsing</span></p>
@@ -73,10 +71,14 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Parse Trees vs. Abstract Syntax Trees</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/ast-building-intro/">AST Building</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">AST Building</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#updating-the-grammar-tree-walking">Updating the Grammar &amp; Tree Walking</a>
+    </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -93,8 +95,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Grammar Design</li>
-      <li class="breadcrumb-item active">Matching Comments and Whitespace</li>
+          <li class="breadcrumb-item">Abstract Syntax Tree Generation</li>
+      <li class="breadcrumb-item active">AST Building</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -103,30 +105,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="matching-whitespace">Matching Whitespace</h1>
-<p>When the parser matches comment and whitespace tokens, ideally we would like to toss them out. That way, the parser doesn't have to worry about matching optional comments and whitespace everywhere. Since DFM files aren't conventionally commented, we will be focusing on just whitespaces.</p>
-<p>Note that in DFM files, newlines don't act as command terminators. The structure is delimited by keywords such as <em>object</em> and the property assignments are self-terminating. For instance, <code>Caption = 'hello'</code> is unambiguous on its own because the grammar knows a property is <code>NAME '=' VALUE</code>. The newline between properties is just whitespace.</p>
-<p>Defining discarded tokens has the same process as for non-discarded ones. We just have to indicate that the lexer should throw them out using the <code>skip</code> command, preceded by the <code>-&gt;</code> operator.</p>
-<p>We tokenize (and toss) whitespaces like so:</p>
-<p><code>../../DelphiDFM.g4</code></p>
-<pre><code class="language-yaml">grammar DelphiDFM ;
-
-// Parser Rules
-file : object
-object : objectElements ;
-
-...
-
-STRING : '\'' .*? '\'' ;
-WS : [ \t\r\n]+ -&gt; skip ;   // match 1-or-more whitespace but discard
-</code></pre>
-<p>That simple. For DFM files we simply skip all whitespace including newlines.</p>
+                <h1 id="commencement">Commencement</h1>
+<p>Previous versions of <em>ANTLR</em> possessed the capability of automatically generating <em>ASTs</em> from input files. However, in its latest version (that is version 4, at the time of writing this documentation), this automatic generation feature no longer exists. Fortunately, <em>ANTLRv4</em> provides the necessary tools to build our own <em>AST</em> generator. The techniques used to achieve these syntax trees are detailed in this chapter.</p>
+<h2 id="updating-the-grammar-tree-walking">Updating the Grammar &amp; Tree Walking</h2>
+<p>For implementing the <em>AST</em> generation, we will be leveraging the tree-walking feature of <em>ANTLR</em>. To properly make use of this feature, it will be necessary to first update our DFM grammar, clean up all generated files and re-generate everything.</p>
+<p>--TBC</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../gd-init/" class="btn btn-neutral float-left" title="Design Initiation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../gd-floats/" class="btn btn-neutral float-right" title="Matching Floating-Point Numbers">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../" class="btn btn-neutral float-left" title="Parse Trees vs. Abstract Syntax Trees"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -150,10 +138,8 @@ WS : [ \t\r\n]+ -&gt; skip ;   // match 1-or-more whitespace but discard
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../gd-init/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../gd-floats/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

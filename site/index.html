@@ -72,9 +72,11 @@
                   <li class="toctree-l1"><a class="reference internal" href="parsing/features/">Additional Features</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
+              <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="transpiling/">From Parse Trees to Abstract Syntax Trees</a>
+                  <li class="toctree-l1"><a class="reference internal" href="ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ast-gen/ast-building-intro/">AST Building</a>
                   </li>
               </ul>
       </div>
@@ -104,7 +106,7 @@
 <p>This documentation delves into all aspects of the front end transpiler tool, used for translating legacy Delphi DFM files into moder React/TypeScript code. </p>
 <p>It starts with parsing Delphi VCL components, represented by the <code>.dfm</code> files. Going into details of designing the DFM grammar, which provide a solid foundation and inform the reader on techniques used for expanding said grammar (if necessary in the future).</p>
 <p>Once the foundations have been established, a refined and ready-to-use DFM grammar will be looked at, and will be parsed using <strong>ANTLR4</strong> in later sections. The foundation of this project <em>is</em> <strong>ANTLRv4</strong>, therefore it's setup and usage are also elaborated upon, in great detail. </p>
-<p>The transpiler tool will leverage <em>Abstract Syntax Trees (AST)</em> of the legacy code, and translate them into modern intermediate models of the same level. For this, the documentation delves into implementing <em>AST</em> generation from the created DFM grammar (of previous sections), to ultimately be used as reference in generating a modern React/TypeScript <em>AST</em>.</p>
+<p>The transpiler tool leverages <em>Abstract Syntax Trees (AST)</em> of the legacy code, to translate them into modern intermediate models of the same level. For this, the documentation delves into implementing <em>AST</em> generation, based on a DFM grammar, to ultimately be used as reference in generating a modern React/TypeScript <em>AST</em>.</p>
 <p>In concordance with the <em>AST generation</em> chapter, sections elaborating transformation rules will assimilate into it, as essential design decisions.</p>
 <p><strong>To be continued after further developments...</strong></p>
               
@@ -156,5 +158,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-03-27 09:49:30.361427+00:00
+Build Date UTC : 2026-04-10 09:47:51.855836+00:00
 -->

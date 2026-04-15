@@ -88,9 +88,11 @@
                   <li class="toctree-l1"><a class="reference internal" href="../../parsing/features/">Additional Features</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Steps Towards Transpiling</span></p>
+              <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../../transpiling/">From Parse Trees to Abstract Syntax Trees</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/ast-building-intro/">AST Building</a>
                   </li>
               </ul>
       </div>
@@ -179,8 +181,8 @@ WS               : [ \t\r\n]+ -&gt; skip ;
 <p>First, we recognize that in essence, DFM files are composed of blocks containing all set properties, component positions/dimensions, event handlers, etc. Therefore, our <em>file</em> needs to contain at least one or more of these blocks, through <code>block+ EOF</code>. By including <code>EOF</code> (End of File), we explicitly specify that we want to parse the entire file. Omitting <code>EOF</code> would mean that it is acceptable to only parse a portion of the input.</p>
 <p><strong>Note</strong>: The <code>EOF</code> rule means "Parse as many <em>block</em> elements as possible, and then stop." In other words, this rule will never attempt to recover from a syntax error because it will always assume that the syntax error is part of some syntactic construct that's beyond the scope of the <em>file</em> rule. Syntax errors will not even be reported, because the parser will simply stop. </p>
 <h3 id="block-rule">Block Rule</h3>
-<p>Since DFM blocks can start with one of two options (<em>inherited</em> or <em>object</em>), we specify a choice for the parser to opt for one. Either of the options, always continues with a string, followed by a colon, followed by another string.</p>
-<p>Then, we follow it up with two optional parser rules. Meaning, that there <em>could be zero-or-more</em> blocks of properties or additional blocks following. By including <code>block*</code>, we are accounting for nested elements. </p>
+<p>Since DFM blocks can start with one of two options (for now): <em>inherited</em> or <em>object</em>, we specify a choice for the parser to opt for one. Either of the options, always continues with a string, followed by a colon, followed by another string.</p>
+<p>Then, we follow it up with two optional parser rules. Meaning that, there <em>could be zero-or-more</em> blocks of properties or additional blocks following. By including <code>block*</code>, we are accounting for nested elements. </p>
 <p>Finally, we conlude a <code>block</code> parser rule, by specifying <code>end</code>, which is our reserved rule defined in the lexer rules. Hence, all blocks in DFM files conclude with an <em>end</em> specifier.</p>
 <h3 id="the-property-block">The Property Block</h3>
 <p>All values in DFM files are assigned to property and sub-property declarations, separated by the <code>=</code> operator. To simplify parsing them, we assign the parser rule <code>value</code> to both <code>ID</code> and <code>SUBPROPERTY</code>. In the lexer rules, we classify <code>SUBPROPERTY</code> as having two or more strings concatenated by <strong>dots</strong>.</p>
