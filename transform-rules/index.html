@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Introduction - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Introduction";
+        var mkdocs_page_input_path = "transform-rules/index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-creation/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-creation/gd-init/">Design Initiation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-creation/gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-creation/gd-floats/">Matching Floating-Point Numbers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-creation/gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Parsing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/antlr-setup/">ANTLR4 Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/dfm-parsing/">DFM Code Parsing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/trees/">Parse Trees in ANTLR</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../parsing/features/">Additional Features</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/grammar-update/">Grammar Update</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/generation/">Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../ast-gen/ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Introduction</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#preparations">Preparations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ast-node-refinement">AST Node Refinement</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Transformation Rules</li>
+      <li class="breadcrumb-item active">Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="introduction">Introduction</h1>
+<p>The design of transformation rules (and later on the transformation model) is regarded as the most complex component of this tool. It is a crucial step, which necessitates careful architecting to ensure a valid output.</p>
+<p>The transformation rules are comprised of a series of design decisions that specify how the conversion from source <em>AST</em> to target <em>AST</em> should be executed. This encapsulates the core component of the <strong>Transformation Model</strong>, regarded as the <strong>Semantic Transformation Layer</strong> within the transpiler pipeline.</p>
+<h2 id="preparations">Preparations</h2>
+<p>In order to transpile a DFM file to React, the first step is to identify all dependencies of the chosen file. Determining the inheritance hierarchy of a file is a crucial step in establishing the transformation sequence.</p>
+<p>Given a 5-level deep inheritance hierarchy of a chosen subset, we shall establish the philosophy of designing transformations for inherited non-root components. The chosen subset's hierarchy has been traced in the figure below, and is used as reference throughout the process of designing transformation rules:</p>
+<p><img alt="Class Diagram of ActionsFrame.dfm Tracing its Inheritance Hierarchy" src="assets/dfm-composition-diagram.png" /></p>
+<p>The transpiling strategy will follow a bottom-up approach, working upwards from the furthest leaf-node: <code>ActionsFrame.dfm</code>. This will mean that stubs will be created for missing functionality as the inheritance hierarchy gets transpiled sequentially.</p>
+<h3 id="ast-node-refinement">AST Node Refinement</h3>
+<p>The first step we'll need to take, is to properly define the node categories:</p>
+<table>
+<thead>
+<tr>
+<th>Node Categories</th>
+<th>Examples</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Layout Properties</strong><br>These control visual positioning and sizing. <br>They map directly to CSS style objects in React.</td>
+<td>• Left<br>• Top<br>• Width<br>• Height<br>• Align<br>• Anchors<br></td>
+<td>• MinWidth<br> •BestFitMaxWidth<br>• MinSize<br>• DesignSize<br>• ExplicitWidth</td>
+</tr>
+<tr>
+<td><strong>Visual/Appearance Properties</strong> <br>These control how a component looks but are not about position. <br>Will map to CSS styling or component props in React.</td>
+<td>• Color<br>• ParentColor<br>• ParentBackground<br>• Visible<br>• Caption<br></td>
+<td>• Transparent<br>• BevelOuter<br>• PaintStyle<br>• BorderWidth</td>
+</tr>
+<tr>
+<td><strong>Behavioral/Configuration Properties</strong><br>These configure how the component behaves at runtime but do not directly affect layout or appearance. <br>Typical transition for React: component props.</td>
+<td>• TabOrder<br>• TabStop<br>• Enabled<br>• AutoSize<br>• SortIndex<br>• SortOrder<br>• SortOptions<br>• GroupIndex<br></td>
+<td>• DisplayWidth<br>• Size<br>• FieldName<br>• Version<br>• DotMatrixReport<br>• Separator<br>• UTF8</td>
+</tr>
+<tr>
+<td><strong>Namespaced Configuration Properties</strong><br>These are configuration properties scoped under a sub object. Syntactically they use the <code>SUBPROPERTY</code> token. Semantically they are still configuration but grouped.</td>
+<td>• Options.Filtering<br>• OptionsData.Editing<br>• OptionsView.CellEndEllipsis<br>• Properties.Alignment.Vert<br>• Properties.WordWrap<br>• SpeedButtonOptions.Transparent<br></td>
+<td>• Constraints.MaxHeight<br>• HotZone.SizePercent<br>• PreviewOptions.Zoom<br>• PrintOptions.Printer<br> •ReportOptions.CreateDate</td>
+</tr>
+<tr>
+<td><strong>Data Binding Properties</strong><br>These connect a UI component to a data source. They have direct implications for React state management.</td>
+<td>• DataBinding.FieldName<br>• DataBinding.DataField<br>• DataBinding.DataSource<br></td>
+<td>•DataController.DataSource<br>• DataSet</td>
+</tr>
+<tr>
+<td><strong>Event Handlers</strong><br>These wire up user interactions or lifecycle events to Object Pascal methods. <br>In React, they will become callback props or handler functions.</td>
+<td>• OnClick<br>• OnChange<br>• OnTimer<br>• OnEnter<br>• OnExit<br>• OnResize<br>• OnDblClick<br>• OnGetDisplayText<br></td>
+<td>• OnSendMail<br>• OnCheckEOF<br>• OnFirst<br>• OnNext<br>• OnPrior<br>• OnGetValue<br>• BeforePost</td>
+</tr>
+<tr>
+<td><strong>Cross Component References</strong><br>These point to another component either within the same file or in an external module.</td>
+<td>• FocusControl = edDate<br>• PopupMenu = popList<br>• Control = pnlEntry<br>• GridView = gvList<br>• Properties.ListSource = dsUser<br></td>
+<td>• Action = frmMain.aiAdd<br>• OptionsImage.Images = dmMain.ilNormal16x16<br>• BarManager = frmMain.BarManager</td>
+</tr>
+<tr>
+<td><strong>Non Visual Service Components</strong><br>These are entire component declarations (not individual properties) that have no visual representation. Such as data sources, timers, report generators, exporters, and so on.</td>
+<td>• TDataSource<br>• TdxMemData<br>• TfrxReport<br>• TfrxPDFExport<br>• TfrxCSVExport<br>• TfrxHTMLExport<br>• TfrxSimpleTextExport<br>• TfrxMailExport<br></td>
+<td>• TfrxUserDataSet<br>• TTimer<br>• TdxBarPopupMenu<br>• TIntegerField<br>• TStringField<br>• TDateField<br>• TFloatField<br>• TDateTimeField</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ast-gen/ast-build/" class="btn btn-neutral float-left" title="AST Builder"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>Copyright 2026 Estrategy© All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../ast-gen/ast-build/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

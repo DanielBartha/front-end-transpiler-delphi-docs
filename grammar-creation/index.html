@@ -48,11 +48,7 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Introduction</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#foreword">Foreword</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#sources">Sources</a>
-    </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#abstract-language-components">Abstract Language Components</a>
     </li>
     </ul>
                   </li>
@@ -82,7 +78,20 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/ast-building-intro/">AST Building</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/grammar-update/">Grammar Update</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ast-gen/generation/">Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../ast-gen/ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../transform-rules/">Introduction</a>
                   </li>
               </ul>
       </div>
@@ -110,24 +119,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="designing-the-dfm-grammar">Designing the DFM Grammar</h1>
-<p>This chapter outlines the components and rules that need to be followed when desgning an ANTLR-specific grammar for Delphi DFM files. It teaches the reader to write ANTLR- and DFM-specific grammar, but also covers the fundamentals needed to wirte any language grammar (useful in case of extensions). The chapter concludes with providing a ready-to-use Delphi DFM grammar, which leverages the concepts detailed in previous sections.</p>
-<h2 id="foreword">Foreword</h2>
-<p>Everything related to parsing, is specifically tailored to <strong>ANTLRv4</strong>. Using previous versions of ANTLR would result in several major issues.</p>
-<p>The grammar creation exemplified in this chapter is specifically designed with the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> system in mind, property of <a href="https://www.estrategysoftware.com">Estrategy</a>. Although most concepts regarding grammar creation truthfully appply, this documentation and all examples provided are specifically designed with DFM files in mind.</p>
-<p>The transpiler build detailed in this documentation, is solely based on a specific representative subset of the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> codebase.</p>
-<p>This document assumes familiarity with the general concept of lexers, parsers, grammars, parsing algorithms and methods, and some ANTLR-specific syntax. Knowledge on <em>ANTLR4</em> features is not necessarily a prerequisite, as the essential concepts are detailed throughout this documentation. However, we strongly recommend taking an overview on <em>ANTLR's</em> full feature list (check for sources below).</p>
-<p><em>ANTLRv4</em> relies on the <strong>LL(k)</strong> parsing algorithm, which is a highly suitable for parsing DFM files. This documentation does not delve into the levels of granularity of parsing algorithms. Therefore, if the reader wishes to understand <em>ANTLR's</em> inner workings, which also substantiate its usage for DFM parsing, we recommend the sources included at the end of this page.</p>
-<p>The examples provided throughout the document build upon each other. Therefore, it is necessary to understand them for the purpose of contextualizing and informing on all decisions taken.</p>
-<h3 id="sources">Sources</h3>
-<p>In case further context is needed, and the reader would like to delve deeper on the concepts and topics presented throughout this documentation, we highly recommend the following sources:</p>
+<p>This chapter outlines the components and rules that need to be followed when desgning an ANTLR-specific grammar for Delphi DFM files. It teaches the reader to write ANTLR- and DFM-specific grammar, but also covers the fundamentals needed to wirte any language grammar (useful in case of extensions). The chapter concludes with providing a ready-to-use Delphi DFM grammar, which leverages the concepts detailed from previous sections.</p>
+<h2 id="abstract-language-components">Abstract Language Components</h2>
+<p>The first step in writing a language grammar, is to understand the abstract components any grammar is composed of (in general).</p>
 <ul>
-<li><a href="https://www.antlr.org/index.html">ANTLR Main Page</a></li>
-<li><a href="https://github.com/antlr/antlr4/blob/master/doc/index.md">ANTLR4 GitHub Documentation</a></li>
-<li><a href="https://pragprog.com/titles/tpantlr2/the-definitive-antlr-4-reference/">The Definitive ANTLR 4 Reference</a></li>
-<li><a href="https://web.stanford.edu/class/archive/cs/cs143/cs143.1128/">Stanford University - CS143 Compilers</a></li>
-<li><a href="https://repository.unikom.ac.id/48769/1/Compilers%20-%20Principles,%20Techniques,%20and%20Tools%20(2006).pdf">"The Dragon Book" - Compilers: Principles, Techniques, and Tools</a></li>
-<li><a href="https://en.wikipedia.org/wiki/LL_parser#:~:text=The%20LL(k)%20parser%20is,alphabet%20are%20finite%20in%20size.">Parsing Algorithms and LL(k)</a></li>
-<li><a href="https://docwiki.embarcadero.com/RADStudio/Athens/en/Delphi_Language_Reference">Delphi Language Reference</a></li>
+<li><code>Sequence</code>: of elements such as values in array.</li>
+<li><code>Choice</code>: between multiple, alternative phrases (such as different kinds of statements in language).</li>
+<li><code>Token dependence</code>.</li>
+<li><code>Nested phrase</code>: self-similar language construct (ex. aithmentic expression or nested statement blocks in language).</li>
 </ul>
               
             </div>

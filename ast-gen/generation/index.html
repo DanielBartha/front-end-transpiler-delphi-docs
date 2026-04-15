@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Generation - Front End Transpiler Documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Generation";
+        var mkdocs_page_input_path = "ast-gen/generation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Front End Transpiler Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Grammar Design</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-init/">Design Initiation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-comments-whitespace/">Matching Comments and Whitespace</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-floats/">Matching Floating-Point Numbers</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../grammar-creation/gd-refine/">Refining the Grammar</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Parsing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../parsing/">Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../parsing/antlr-setup/">ANTLR4 Setup</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../parsing/dfm-parsing/">DFM Code Parsing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../parsing/trees/">Parse Trees in ANTLR</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../parsing/features/">Additional Features</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Abstract Syntax Tree Generation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Parse Trees vs. Abstract Syntax Trees</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../grammar-update/">Grammar Update</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Generation</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../transform-rules/">Introduction</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Front End Transpiler Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Abstract Syntax Tree Generation</li>
+      <li class="breadcrumb-item active">Generation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="regenerate-the-parser">Regenerate the Parser</h1>
+<p>Now that we have updated our grammar, we will need to regenerate out parser. This involves the standard process we have followed until now, however there is an important distinction. In order for <em>ANTLR</em> to use our annotations, we will need to make use of <em>ANTLR's</em> tree walking feature by generating the parser with an additional command.</p>
+<p>Let's see the process:</p>
+<ol>
+<li>Clean up old files</li>
+</ol>
+<p><code>rm *.java *.class *.tokens *.interp</code></p>
+<ol>
+<li>Regenerate the parser with <em>ANTLR's</em> tree walking feature</li>
+</ol>
+<p><code>antlr4 DelphiDFM.g4 -visitor</code></p>
+<p>By including the <code>-visitor</code> command, we tell <em>ANTLR</em> to generate the <em>DelphiDFMBaseVisitor</em> and <em>DelphiDFMVisitor</em> classes, which will include methods based on our annotations. For instance:</p>
+<p><code>../DelphiDFMVisitor.java</code></p>
+<pre><code class="language-java">...
+
+public interface DelphiDFMVisitor&lt;T&gt; extends ParseTreeVisitor&lt;T&gt; {
+    /**
+     * Visit a parse tree produced by {@link DelphiDFMParser#file}.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitFile(DelphiDFMParser.FileContext ctx);
+    /**
+     * Visit a parse tree produced by the {@code beginBlock}
+     * labeled alternative in {@link DelphiDFMParser#block}.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    T visitBeginBlock(DelphiDFMParser.BeginBlockContext ctx);
+    /**
+     * Visit a parse tree produced by the {@code subProperty}
+     * labeled alternative in {@link DelphiDFMParser#propertyBlock}.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+
+     ...
+}
+</code></pre>
+<p>and</p>
+<p><code>../DelphiDFMBaseVisitor.java</code></p>
+<pre><code class="language-java">...
+
+public class DelphiDFMBaseVisitor&lt;T&gt; extends AbstractParseTreeVisitor&lt;T&gt; implements DelphiDFMVisitor&lt;T&gt; {
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.&lt;/p&gt;
+     */
+    @Override public T visitFile(DelphiDFMParser.FileContext ctx) { return visitChildren(ctx); }
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.&lt;/p&gt;
+     */
+    @Override public T visitBeginBlock(DelphiDFMParser.BeginBlockContext ctx) { return visitChildren(ctx); }
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;The default implementation returns the result of calling
+     * {@link #visitChildren} on {@code ctx}.&lt;/p&gt;
+     */
+
+    ...
+}
+</code></pre>
+<p>Of course, we can also find them within our generated parser, where the real logic of vistors lives:</p>
+<p><code>../DelphiDFMParser.java</code></p>
+<pre><code class="language-java">    ...
+
+    @SuppressWarnings(&quot;CheckReturnValue&quot;)
+    public static class BlockContext extends ParserRuleContext {
+        public BlockContext(ParserRuleContext parent, int invokingState) {
+            super(parent, invokingState);
+        }
+        @Override public int getRuleIndex() { return RULE_block; }
+
+        public BlockContext() { }
+        public void copyFrom(BlockContext ctx) {
+            super.copyFrom(ctx);
+        }
+    }
+    @SuppressWarnings(&quot;CheckReturnValue&quot;)
+    public static class BeginBlockContext extends BlockContext {
+        public List&lt;TerminalNode&gt; ID() { return getTokens(DelphiDFMParser.ID); }
+        public TerminalNode ID(int i) {
+            return getToken(DelphiDFMParser.ID, i);
+        }
+        public TerminalNode END() { return getToken(DelphiDFMParser.END, 0); }
+        public TerminalNode INHERITED() { return getToken(DelphiDFMParser.INHERITED, 0); }
+        public TerminalNode OBJECT() { return getToken(DelphiDFMParser.OBJECT, 0); }
+        public TerminalNode INLINE() { return getToken(DelphiDFMParser.INLINE, 0); }
+        public List&lt;PropertyBlockContext&gt; propertyBlock() {
+            return getRuleContexts(PropertyBlockContext.class);
+        }
+        public PropertyBlockContext propertyBlock(int i) {
+            return getRuleContext(PropertyBlockContext.class,i);
+        }
+        public List&lt;BlockContext&gt; block() {
+            return getRuleContexts(BlockContext.class);
+        }
+        public BlockContext block(int i) {
+            return getRuleContext(BlockContext.class,i);
+        }
+        public BeginBlockContext(BlockContext ctx) { copyFrom(ctx); }
+        @Override
+        public void enterRule(ParseTreeListener listener) {
+            if ( listener instanceof DelphiDFMListener ) ((DelphiDFMListener)listener).enterBeginBlock(this);
+        }
+        @Override
+        public void exitRule(ParseTreeListener listener) {
+            if ( listener instanceof DelphiDFMListener ) ((DelphiDFMListener)listener).exitBeginBlock(this);
+        }
+        @Override
+        public &lt;T&gt; T accept(ParseTreeVisitor&lt;? extends T&gt; visitor) {
+            if ( visitor instanceof DelphiDFMVisitor ) return ((DelphiDFMVisitor&lt;? extends T&gt;)visitor).visitBeginBlock(this);
+            else return visitor.visitChildren(this);
+        }
+    }
+
+    ...
+</code></pre>
+<ol>
+<li>Compile everything</li>
+</ol>
+<p><code>javac *.java</code></p>
+<p>Everything should compile at this point, and we should be ready to implement the <em>AST</em> generation.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../grammar-update/" class="btn btn-neutral float-left" title="Grammar Update"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ast-build/" class="btn btn-neutral float-right" title="AST Builder">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><h3><i>Copyright 2026 Estrategy© All Rights Reserved</i></h3></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../grammar-update/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ast-build/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

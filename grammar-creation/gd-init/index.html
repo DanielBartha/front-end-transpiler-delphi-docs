@@ -76,7 +76,20 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/ast-building-intro/">AST Building</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/grammar-update/">Grammar Update</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../ast-gen/generation/">Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../ast-gen/ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../transform-rules/">Introduction</a>
                   </li>
               </ul>
       </div>
@@ -103,15 +116,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="abstract-language-components">Abstract Language Components</h1>
-<p>The first step in writing a language grammar, is to understand the abstract components any grammar is composed of (in general).</p>
-<ul>
-<li><code>Sequence</code>: of elements such as values in array.</li>
-<li><code>Choice</code>: between multiple, alternative phrases (such as different kinds of statements in language).</li>
-<li><code>Token dependence</code>.</li>
-<li><code>Nested phrase</code>: self-similar language construct (ex. aithmentic expression or nested statement blocks in language).</li>
-</ul>
-<h1 id="design-initiation">Design Initiation</h1>
+                <h1 id="design-initiation">Design Initiation</h1>
 <p>Considering top-down parsing, we start from the coarsest elements and descend in levels of granularity. Designing starts with natural language. Ergo, the formal definition of Delphi VCL <code>.dfm</code> files.</p>
 <p><strong>Formal Definition</strong> - Delphi Form Module files are proprietary file formats which store the properties, attributes and component layouts of forms, frames, and data modules.</p>
 <p>The keyword here is <strong>FILE(S)</strong>. Thus, we specify <em>file</em> as our entry point, becoming the <strong>RULE NAME</strong>.</p>

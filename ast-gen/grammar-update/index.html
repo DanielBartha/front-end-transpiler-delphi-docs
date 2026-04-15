@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Dezső-Dániel Bartha" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>AST Building - Front End Transpiler Documentation</title>
+    <title>Grammar Update - Front End Transpiler Documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "AST Building";
-        var mkdocs_page_input_path = "ast-gen/ast-building-intro.md";
+        var mkdocs_page_name = "Grammar Update";
+        var mkdocs_page_input_path = "ast-gen/grammar-update.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -74,11 +74,22 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../">Parse Trees vs. Abstract Syntax Trees</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">AST Building</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Grammar Update</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#updating-the-grammar-tree-walking">Updating the Grammar &amp; Tree Walking</a>
-    </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../generation/">Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../transform-rules/">Introduction</a>
                   </li>
               </ul>
       </div>
@@ -96,7 +107,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Abstract Syntax Tree Generation</li>
-      <li class="breadcrumb-item active">AST Building</li>
+      <li class="breadcrumb-item active">Grammar Update</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -106,15 +117,76 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="commencement">Commencement</h1>
-<p>Previous versions of <em>ANTLR</em> possessed the capability of automatically generating <em>ASTs</em> from input files. However, in its latest version (that is version 4, at the time of writing this documentation), this automatic generation feature no longer exists. Fortunately, <em>ANTLRv4</em> provides the necessary tools to build our own <em>AST</em> generator. The techniques used to achieve these syntax trees are detailed in this chapter.</p>
-<h2 id="updating-the-grammar-tree-walking">Updating the Grammar &amp; Tree Walking</h2>
-<p>For implementing the <em>AST</em> generation, we will be leveraging the tree-walking feature of <em>ANTLR</em>. To properly make use of this feature, it will be necessary to first update our DFM grammar, clean up all generated files and re-generate everything.</p>
-<p>--TBC</p>
+<p>Previous versions of <em>ANTLR</em> possessed the capability of automatically generating <em>ASTs</em> from input files. However, in its latest version (that is version 4, at the time of writing this documentation), this automatic generation feature no longer exists. Fortunately, <em>ANTLRv4</em> provides the necessary tools to build our own <em>AST</em> generator. The rest of this chapter will walk you through all steps of the <em>AST</em> generator's implementation.</p>
+<h1 id="updating-the-grammar">Updating the Grammar</h1>
+<p>For implementing the <em>AST</em> generation, we will be leveraging the tree-walking feature of <em>ANTLR</em>. The first step will be the upgrade our DFM grammar with <em>ANTLR's</em> grammar annotation feature.</p>
+<p>The upgraded grammar looks like this:</p>
+<p><code>../../DelphiDFM.g4</code></p>
+<pre><code class="language-yaml">grammar DelphiDFM ;
+
+file             : block+ EOF 
+                 ;
+
+// Parser Rules
+block            : ('inherited' | 'object' | 'inline') ID ':' ID propertyBlock* block* 'end'   # beginBlock
+                 ;
+
+propertyBlock    : SUBPROPERTY '=' value                                                       # subProperty
+                 | ID '=' value                                                                # valueProperty
+                 ;
+
+value            : INT                                                                         # intValue
+                 | FLOAT                                                                       # floatValue
+                 | STRING                                                                      # stringLiteralValue
+                 | ID                                                                          # stringValue
+                 | ARRAY                                                                       # arrayValue
+                 | collectionItems                                                             # collectionItemValue
+                 | parenList                                                                   # parenListValue
+                 | SUBPROPERTY                                                                 # dottedIdValue
+                 ;
+
+collectionItems  : '&lt;' item* '&gt;' ;
+item             : 'item' propertyBlock* 'end' ;
+
+parenList        : '(' (INT | FLOAT | STRING)* ')' ;
+
+// Lexer Rules
+INHERITED        : 'inherited' ;
+OBJECT           : 'object' ;
+INLINE           : 'inline' ;
+END              : 'end' ;
+ITEM             : 'item' ;
+
+SUBPROPERTY      : ID_FRAG '.' ID_FRAG ('.' ID_FRAG)? ;
+ARRAY            : '[' .*? ']' ;
+ID               : ID_FRAG ;
+
+FLOAT            : '-'? (DIGIT+ '.' DIGIT* 
+                 | '.' DIGIT+) 
+                 ;
+
+INT              : '-'? DIGIT+ ;
+
+fragment ID_FRAG : [a-zA-Z][a-zA-Z0-9_]* ;
+fragment DIGIT   : [0-9] ;
+
+STRING           : '\'' .*? '\'' ;
+WS               : [ \t\r\n]+ -&gt; skip ;
+</code></pre>
+<h2 id="breaking-down-the-changes">Breaking Down the Changes</h2>
+<h3 id="block-rule">Block Rule</h3>
+<p>Our first update involves the inclusion of <em>inline</em> as an alternative option for component declarations. It follows, that we needed to include it as a reserved keyword in our <em>Lexer Rules</em> as well.</p>
+<h3 id="value-rule-additions">Value Rule Additions</h3>
+<p>First, we included the <code>parenList</code> rule, to account for properties such as <code>DesignSize = (100 \n 200)</code>, where certain values can be included between parentheses, only separated by newlines.</p>
+<p>The second addition, was the inclusion of our <code>SUBPROPERTY</code> rule as a value. The rationale behind it, is that certain values can be assigned to properties within DFM files. For instance, <code>OptionsImage.Images = dmMain.ilNormal24x24</code>.</p>
+<h3 id="annotations">Annotations</h3>
+<p>This is the big one. <em>ANTLR</em> allows including values such as our <code># beginBlock</code> within the grammar. These values are called annotations, and they tell <em>ANTLR</em> to create methods with the specified names, when generating the parser. These annotations represent the core of our <em>AST</em> generator, as we will override them to generate <em>ASTs</em>. In the next section we'll see what happened when we regenerated the parser and delve into the <em>AST</em> generation.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../" class="btn btn-neutral float-left" title="Parse Trees vs. Abstract Syntax Trees"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../generation/" class="btn btn-neutral float-right" title="Generation">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -140,6 +212,8 @@
     
       <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../generation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

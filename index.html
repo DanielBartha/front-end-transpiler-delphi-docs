@@ -43,6 +43,16 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#documentation-overview">Documentation Overview</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#foreword">Foreword</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#sources">Sources</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -76,7 +86,20 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="ast-gen/">Parse Trees vs. Abstract Syntax Trees</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="ast-gen/ast-building-intro/">AST Building</a>
+                  <li class="toctree-l1"><a class="reference internal" href="ast-gen/grammar-update/">Grammar Update</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ast-gen/generation/">Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Development</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="ast-gen/ast-build/">AST Builder</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Transformation Rules</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="transform-rules/">Introduction</a>
                   </li>
               </ul>
       </div>
@@ -103,12 +126,36 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="delphi-front-end-transpiler">Delphi Front End Transpiler</h1>
-<p>This documentation delves into all aspects of the front end transpiler tool, used for translating legacy Delphi DFM files into moder React/TypeScript code. </p>
-<p>It starts with parsing Delphi VCL components, represented by the <code>.dfm</code> files. Going into details of designing the DFM grammar, which provide a solid foundation and inform the reader on techniques used for expanding said grammar (if necessary in the future).</p>
-<p>Once the foundations have been established, a refined and ready-to-use DFM grammar will be looked at, and will be parsed using <strong>ANTLR4</strong> in later sections. The foundation of this project <em>is</em> <strong>ANTLRv4</strong>, therefore it's setup and usage are also elaborated upon, in great detail. </p>
-<p>The transpiler tool leverages <em>Abstract Syntax Trees (AST)</em> of the legacy code, to translate them into modern intermediate models of the same level. For this, the documentation delves into implementing <em>AST</em> generation, based on a DFM grammar, to ultimately be used as reference in generating a modern React/TypeScript <em>AST</em>.</p>
-<p>In concordance with the <em>AST generation</em> chapter, sections elaborating transformation rules will assimilate into it, as essential design decisions.</p>
-<p><strong>To be continued after further developments...</strong></p>
+<p>This documentation delves into all aspects of the front end transpiler tool, used for translating legacy Delphi DFM files into modern React/TypeScript code.</p>
+<p>The Delphi front end transpiler is a tool based on Model-Driven Engineering (MDE) (see the sources below for more information). Its design perfectly aligns with MDE methodologies, and by this design strategy we are able to encapsulate the tool's components into models/artifacts. This allows for separation of concerns and helps in overseeing developmental phases.</p>
+<p>The MDE-based transpiler pipeline is depicted below, showcasing the model-based encapsulation of its components:</p>
+<p><img alt="Delphi Front End Transpiler Pipeline" src="assets/transpiler-process.png" /></p>
+<h2 id="documentation-overview">Documentation Overview</h2>
+<p>The documentation starts with parsing Delphi VCL components, represented by the <code>.dfm</code> files. Going into details of designing the DFM grammar, which provide a solid foundation and inform the reader on techniques used for expanding said grammar (if necessary in the future).</p>
+<p>Once the foundations have been established, a refined and ready-to-use DFM grammar will be looked at, and will be parsed using <strong>ANTLR4</strong> in later sections. The foundation of this project <em>is</em> <strong>ANTLRv4</strong>, therefore it's setup and usage are also elaborated.</p>
+<p>The transpiler tool leverages <em>Abstract Syntax Trees (AST)</em> of the legacy code, to translate them into modern intermediate models of the same level. For this, the documentation delves into implementing <em>AST</em> generation, based on a DFM grammar, to ultimately be used as reference for translating to a modern React/TypeScript <em>AST</em>.</p>
+<p>Once <em>AST</em> generation is achieved, the <strong>Semantic Transformation Layer</strong> is elaborated. This component is regarded as the most complex part of this transpiler. It involves several steps: upgrading <em>AST</em> node notations, designing and implementing transformation rules, designing the transformation model itself and implementing it.</p>
+<p>Following the <strong>Semantic Transformation Layer</strong>, the documentation delves into the final part of the pipeline: the <strong>Code Generation Layer</strong>. This layer will be responsible for generating modern React code, by applying the transformation rules on the translated target <em>AST</em>.</p>
+<h3 id="foreword">Foreword</h3>
+<p>Everything related to parsing, is specifically tailored to <strong>ANTLRv4</strong>. Using previous versions of ANTLR would result in several major issues.</p>
+<p>The grammar creation of the first chapter, is specifically designed with the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> system in mind, property of <a href="https://www.estrategysoftware.com">Estrategy</a>. Although most concepts regarding grammar creation truthfully appply, this documentation and all examples provided are specifically designed with DFM files in mind.</p>
+<p>The transpiler build detailed in this documentation, is solely based on a specific representative subset of the <a href="https://www.4foodsoftware.com">4FOOD ERP</a> codebase. It follows, that the transformation rules will specifically be designed with the representative subset in mind. Therefore, the transformation rules will need to be adapted, changed, or expanded when transpiling other subsets. Same goes for the grammar, transformation model, and the code generation layer.</p>
+<p>This document assumes familiarity with the general concept of lexers, parsers, grammars, parsing algorithms and methods, and some ANTLR-specific syntax. Knowledge on <em>ANTLR4</em> features is not necessarily a prerequisite, as the essential concepts are detailed throughout this documentation. However, we strongly recommend taking an overview on <em>ANTLR's</em> full feature list (check for sources below).</p>
+<p><em>ANTLRv4</em> relies on the <code>LL(*)</code> parsing algorithm, which is a highly suitable for parsing DFM files. This documentation does not delve into the granularity levels of parsing algorithms. Therefore, if the reader wishes to understand <em>ANTLR's</em> inner workings and its usage of the <code>LL(*)</code> algorithm, we recommend the sources included at the end of this page.</p>
+<p>The examples provided throughout the document build upon each other. Therefore, it is necessary to understand them for the purpose of contextualizing and informing on all decisions taken.</p>
+<h4 id="sources">Sources</h4>
+<p>In case further context is needed, and the reader would like to delve deeper on the concepts and topics presented throughout this documentation, we highly recommend the following sources:</p>
+<ul>
+<li><a href="https://www.omg.org/mda/">MDA - The Architecture Of Choice For A Changing World</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Model-driven_engineering">Model-Driven Engineering</a></li>
+<li><a href="https://www.antlr.org/index.html">ANTLR Main Page</a></li>
+<li><a href="https://github.com/antlr/antlr4/blob/master/doc/index.md">ANTLR4 GitHub Documentation</a></li>
+<li><a href="https://pragprog.com/titles/tpantlr2/the-definitive-antlr-4-reference/">The Definitive ANTLR 4 Reference</a></li>
+<li><a href="https://web.stanford.edu/class/archive/cs/cs143/cs143.1128/">Stanford University - CS143 Compilers</a></li>
+<li><a href="https://repository.unikom.ac.id/48769/1/Compilers%20-%20Principles,%20Techniques,%20and%20Tools%20(2006).pdf">"The Dragon Book" - Compilers: Principles, Techniques, and Tools</a></li>
+<li><a href="https://en.wikipedia.org/wiki/LL_parser#:~:text=The%20LL(k)%20parser%20is,alphabet%20are%20finite%20in%20size.">Parsing Algorithms and LL(k)</a></li>
+<li><a href="https://docwiki.embarcadero.com/RADStudio/Athens/en/Delphi_Language_Reference">Delphi Language Reference</a></li>
+</ul>
               
             </div>
           </div><footer>
@@ -158,5 +205,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-04-10 09:47:51.855836+00:00
+Build Date UTC : 2026-04-15 20:20:42.186824+00:00
 -->
