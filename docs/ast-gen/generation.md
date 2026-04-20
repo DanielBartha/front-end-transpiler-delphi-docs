@@ -8,7 +8,7 @@ Let's see the process:
 
 ```rm *.java *.class *.tokens *.interp```
 
-2. Regenerate the parser with *ANTLR's* tree walking feature
+2. Regenerate the parser, but this time using *ANTLR's* visitor pattern
 
 ```antlr4 DelphiDFM.g4 -visitor```
 

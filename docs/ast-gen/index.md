@@ -37,4 +37,4 @@ An Abstract Syntax Tree is an abstracted representation of the syntactic structu
 
 Now we can conclude that the most suitable choice will be an Abstract Syntax Tree. A Parse Tree would simply hold too much redundant information which we would need to check and determine whether to discard or keep. Obviously that isn't very efficient.
 
-The following sections in this chapter will walk you through the process of generating the first iteration of an *AST*.
+The following sections in this chapter will walk you through the process of generating the first iteration of an *Abstract Syntax Tree*.

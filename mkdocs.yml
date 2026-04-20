@@ -33,9 +33,13 @@ nav:
   - Abstract Syntax Tree Generation:
     - Parse Trees vs. Abstract Syntax Trees: ast-gen/index.md
     - Grammar Update: ast-gen/grammar-update.md
-    - Generation: ast-gen/generation.md
-    - Development:
-      - AST Builder: ast-gen/ast-build.md
+    - Parser Re-Generation and Visitor Overview: ast-gen/generation.md
+    - Implementation:
+      - AST Composition: ast-gen/ast-composition.md
+      - Property and Component Classifications: ast-gen/node-spec.md
+      - AST Builder: ast-gen/builder.md
+      - Wiring Up to Main: ast-gen/wire-up.md
+      - Cleanup and Generate: ast-gen/clean-and-gen.md
   - Transformation Rules:
     - Introduction: transform-rules/index.md
 plugins:

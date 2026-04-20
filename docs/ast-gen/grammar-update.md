@@ -76,4 +76,4 @@ The second addition, was the inclusion of our `SUBPROPERTY` rule as a value. The
 
 ### Annotations
 
-This is the big one. *ANTLR* allows including values such as our `# beginBlock` within the grammar. These values are called annotations, and they tell *ANTLR* to create methods with the specified names, when generating the parser. These annotations represent the core of our *AST* generator, as we will override them to generate *ASTs*. In the next section we'll see what happened when we regenerated the parser and delve into the *AST* generation.
+This is the big one. *ANTLR* allows including values such as our `# beginBlock` within the grammar. These values are called annotations, and they tell *ANTLR* to create methods with the specified names, when generating the parser. These annotations represent the core of our *AST* generator, as we will override the methods generated for them, to generate *ASTs*. In the next section we'll see what happened when we regenerated the parser, and we'll delve into the *AST* generation development.
