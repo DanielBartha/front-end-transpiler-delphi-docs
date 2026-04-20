@@ -150,7 +150,7 @@ file             : block+ EOF
 block            : ('inherited' | 'object' | 'inline') ID ':' ID propertyBlock* block* 'end'   # beginBlock
                  ;
 </code></pre>
-<p>We know that our DFMs are composed of <code>block</code>s, which themselves are composed of keywords, strings, potential children as <code>propertyBlocks</code> (which hold the same structure), or other nested <code>block</code>s. Thus, we define three public strings: <code>keyword</code>, <code>name</code>, and <code>type</code>. We complement these with the addition of <code>role</code>, which is of type <code>ComponentRoleEnum</code> (more on that in the next page: <a href="ast-gen/node-spec.md">AST Node Classification</a>).</p>
+<p>We know that our DFMs are composed of <code>block</code>s, which themselves are composed of keywords, strings, potential children as <code>propertyBlocks</code> (which hold the same structure), or other nested <code>block</code>s. Thus, we define three public strings: <code>keyword</code>, <code>name</code>, and <code>type</code>. We complement these with the addition of <code>role</code>, which is of type <code>ComponentRoleEnum</code> (more on that in the next page: <a href="../node-spec/">AST Node Classification</a>).</p>
 <p>Next, to account for nested blocks and property blocks, we instantiate lists of both:</p>
 <pre><code class="language-java">public List&lt;PropertyNode&gt; properties = new ArrayList&lt;&gt;();
 public List&lt;ComponentNode&gt; children = new ArrayList&lt;&gt;();
@@ -163,7 +163,7 @@ public List&lt;ComponentNode&gt; children = new ArrayList&lt;&gt;();
                  ;
 </code></pre>
 <p>This one is also fairly simple. Our properties can be one of two choices: either an <code>ID</code> token (meaning String), or a <code>SUBPROPERTY</code> token (meaning Strings concatenated with dots '.').</p>
-<p>Therefore, we create a name for properties, and a value object. Just like we did with <code>ComponentNode</code>, we supplement property nodes with classifications as well, through the inclusion of <code>PropertyCategoryEnum</code> (similarily we discuss these on the following page, <a href="ast-gen/node-spec.md">AST Node Classification</a>).</p>
+<p>Therefore, we create a name for properties, and a value object. Just like we did with <code>ComponentNode</code>, we supplement property nodes with classifications as well, through the inclusion of <code>PropertyCategoryEnum</code> (similarily we discuss these on the following page, <a href="../node-spec/">AST Node Classification</a>).</p>
 <pre><code class="language-java">public String name;    
 public Object value;
 public PropertyCategoryEnum category;
